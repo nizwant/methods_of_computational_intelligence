@@ -1,0 +1,5 @@
+implement automatic dimensions 
+visualize the architecture of the network
+write tests 
+move the code to a separate file
+implement backpropagation
