@@ -5,7 +5,8 @@ move the code to a separate file
 
 visualization ideas:
 - different accuracy of calculating numerically the gradient
-- numeracly calculated gradient vs. backpropagated gradient epoch and time mse 
-- schuffle the data and see how the accuracy changes
-
-
+- numerically calculated gradient vs. backpropagated gradient epoch and time mse 
+- shuffle the data and see how the accuracy changes
+- different optimizers
+- different learning rates
+- different batch sizes
