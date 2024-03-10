@@ -1,5 +1,6 @@
 implement automatic dimensions 
 visualize the architecture of the network
+gif of weights in learning
 write tests 
 move the code to a separate file
 
@@ -10,3 +11,7 @@ visualization ideas:
 - different optimizers
 - different learning rates
 - different batch sizes
+- different initializations methods
+- different activation functions
+- bias == 0 vs bias != 0
+
