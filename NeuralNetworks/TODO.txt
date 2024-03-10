@@ -2,4 +2,10 @@ implement automatic dimensions
 visualize the architecture of the network
 write tests 
 move the code to a separate file
-implement backpropagation
+
+visualization ideas:
+- different accuracy of calculating numerically the gradient
+- numeracly calculated gradient vs. backpropagated gradient epoch and time mse 
+- schuffle the data and see how the accuracy changes
+
+
