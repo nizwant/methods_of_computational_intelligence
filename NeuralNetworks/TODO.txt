@@ -14,4 +14,4 @@ visualization ideas:
 - different initializations methods
 - different activation functions
 - bias == 0 vs bias != 0
-
+- different stages of vectorization ie forward backward itp 
