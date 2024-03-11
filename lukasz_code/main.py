@@ -184,21 +184,19 @@ class NeuralNetwork:
                 and not type(x_batch) == pd.Series
             ):
                 x_batch = np.array([[x_batch]])
-            for x, y in zip(x_batch, y_batch):
-                x = np.array([[x]])
-                self.__feed_forward(x, verbose=verbose)
-                self.back_propagation(y, verbose=verbose)
-                for i in range(self.number_of_layers - 1):
-                    self.weights[i] = np.subtract(
-                        self.weights[i],
-                        learning_rate / len(x_batch) * self.weights_gradient[i],
-                        casting="safe",
-                    )
-                    self.biases[i] = np.subtract(
-                        self.biases[i],
-                        learning_rate / len(x_batch) * self.biases_gradient[i],
-                        casting="safe",
-                    )
+            self.calculate_gradient_numeracly(x_batch, y_batch)
+
+            # self.__feed_forward(x, verbose=verbose)
+            # self.back_propagation(y, verbose=verbose)
+
+            for i in range(self.number_of_layers - 1):
+                self.weights[i] = (
+                    self.weights[i] - learning_rate * self.weights_gradient[i]
+                )
+                self.biases[i] = (
+                    self.biases[i] - learning_rate * self.biases_gradient[i]
+                )
+
                 predicted_output.append(self.a[-1][0][0])
         predicted_output = np.array(predicted_output)
         if verbose:
@@ -294,7 +292,7 @@ class NeuralNetwork:
         """
         Calculate the gradient of the network
         """
-        h = 0.0000001
+        h = 0.001
         original_mse = self.mean_squared_error(input, output)
 
         for layer_number, weight in enumerate(self.weights):
