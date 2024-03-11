@@ -62,8 +62,8 @@ class NeuralNetwork:
         self.z = None
         self.a = None
         self.errors = None
-        self.weights_gradient = None
-        self.biases_gradient = None
+        self.weights_gradient = [np.zeros_like(weigh) for weigh in weights]
+        self.biases_gradient = [np.zeros_like(bias) for bias in biases]
         self.MSE = []
 
     def __calculate_activation(self, input, layer_index, verbose=False):
@@ -287,7 +287,7 @@ class NeuralNetwork:
         """
         mse = []
         for i, j in zip(input, output):
-            mse.append((j - self.__feed_forward(i)) ** 2)
+            mse.append((j - self.predict(i)) ** 2)
         return np.mean(mse)
 
     def calculate_gradient_numeracly(self, input, output):
@@ -297,20 +297,25 @@ class NeuralNetwork:
         h = 0.0000001
         original_mse = self.mean_squared_error(input, output)
 
-        for layer in self.layers:
-            for i in range(layer.weights.shape[0]):
-                for j in range(layer.weights.shape[1]):
-                    layer.weights[i, j] += h
+        for layer_number, weight in enumerate(self.weights):
+            for i in range(weight.shape[0]):
+                for j in range(weight.shape[1]):
+                    self.weights[layer_number][i, j] += h
                     new_mse = self.mean_squared_error(input, output)
-                    layer.weights_gradient[i, j] = (new_mse - original_mse) / h
-                    layer.weights[i, j] -= h
+                    self.weights_gradient[layer_number][i, j] = (
+                        new_mse - original_mse
+                    ) / h
+                    self.weights[layer_number][i, j] -= h
 
-            for i in range(layer.biases.shape[0]):
-                for j in range(layer.biases.shape[1]):
-                    layer.biases[i, j] += h
+        for layer_number, bias in enumerate(self.biases):
+            for i in range(bias.shape[0]):
+                for j in range(bias.shape[1]):
+                    self.biases[layer_number][i, j] += h
                     new_mse = self.mean_squared_error(input, output)
-                    layer.biases_gradient[i, j] = (new_mse - original_mse) / h
-                    layer.biases[i, j] -= h
+                    self.biases_gradient[layer_number][i, j] = (
+                        new_mse - original_mse
+                    ) / h
+                    self.biases[layer_number][i, j] -= h
 
 
 class Neuron:
