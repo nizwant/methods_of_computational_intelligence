@@ -1,6 +1,4 @@
 implement automatic dimensions 
-visualize the architecture of the network
-gif of weights in learning
 write tests 
 move the code to a separate file
 
