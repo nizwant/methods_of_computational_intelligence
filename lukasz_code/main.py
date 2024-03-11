@@ -281,6 +281,37 @@ class NeuralNetwork:
         for i in range(self.number_of_neurons_per_layer[layer_index]):
             self.neurons[layer_index][i].function = new_activation_function
 
+    def mean_squared_error(self, input, output):
+        """
+        Calculate the mean squared error of the network on a given dataset and output
+        """
+        mse = []
+        for i, j in zip(input, output):
+            mse.append((j - self.__feed_forward(i)) ** 2)
+        return np.mean(mse)
+
+    def calculate_gradient_numeracly(self, input, output):
+        """
+        Calculate the gradient of the network
+        """
+        h = 0.0000001
+        original_mse = self.mean_squared_error(input, output)
+
+        for layer in self.layers:
+            for i in range(layer.weights.shape[0]):
+                for j in range(layer.weights.shape[1]):
+                    layer.weights[i, j] += h
+                    new_mse = self.mean_squared_error(input, output)
+                    layer.weights_gradient[i, j] = (new_mse - original_mse) / h
+                    layer.weights[i, j] -= h
+
+            for i in range(layer.biases.shape[0]):
+                for j in range(layer.biases.shape[1]):
+                    layer.biases[i, j] += h
+                    new_mse = self.mean_squared_error(input, output)
+                    layer.biases_gradient[i, j] = (new_mse - original_mse) / h
+                    layer.biases[i, j] -= h
+
 
 class Neuron:
     def __init__(self):
