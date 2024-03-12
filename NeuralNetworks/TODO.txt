@@ -1,6 +1,6 @@
 implement automatic dimensions 
 write tests 
-move the code to a separate file
+refactor code 
 
 visualization ideas:
 - different accuracy of calculating numerically the gradient
