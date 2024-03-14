@@ -131,7 +131,7 @@ class mini_batch_gradient_descent_with_momentum(Optimizer):
         momentum = np.zeros_like(initial_solution)
 
         for _ in range(max_num_epoch):
-            N, _ = X.shape
+            N = X.shape[0]
             shuffled_idx = np.random.permutation(N)
             X, y = X[shuffled_idx], y[shuffled_idx]
             for idx in range(iterations):
@@ -187,7 +187,7 @@ class adagrad(Optimizer):
         squared_gradients = np.zeros_like(initial_solution)
 
         for _ in range(max_num_epoch):
-            N, _ = X.shape
+            N = X.shape[0]
             shuffled_idx = np.random.permutation(N)
             X, y = X[shuffled_idx], y[shuffled_idx]
             for idx in range(iterations):
@@ -246,7 +246,7 @@ class rmsprop(Optimizer):
         squared_gradients = np.zeros_like(initial_solution)
 
         for _ in range(max_num_epoch):
-            N, _ = X.shape
+            N = X.shape[0]
             shuffled_idx = np.random.permutation(N)
             X, y = X[shuffled_idx], y[shuffled_idx]
             for idx in range(iterations):
@@ -312,7 +312,7 @@ class adam(Optimizer):
         counter = 0
 
         for _ in range(max_num_epoch):
-            N, _ = X.shape
+            N = X.shape[0]
             shuffled_idx = np.random.permutation(N)
             X, y = X[shuffled_idx], y[shuffled_idx]
             for idx in range(iterations):
