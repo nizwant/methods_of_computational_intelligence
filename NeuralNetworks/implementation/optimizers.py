@@ -49,7 +49,7 @@ class mini_batch_gradient_descent(Optimizer):
         calculate_gradient,
         learning_rate=0.01,
         max_num_epoch=1000,
-        batch_size=1,
+        batch_size=42,
         batch_fraction=None,
     ):
         """
@@ -89,6 +89,77 @@ class mini_batch_gradient_descent(Optimizer):
                 current_solution = current_solution - learning_rate * gradient
             print("Epoch:", current_solution)
         return current_solution
+
+
+class stochastic_gradient_descent(Optimizer):
+
+    def optimize(
+        self,
+        X,
+        y,
+        initial_solution,
+        calculate_gradient,
+        learning_rate=0.01,
+        max_num_epoch=1000,
+    ):
+        """
+        Performs stochastic gradient descent optimization.
+
+        Parameters:
+        - X: Input data.
+        - y: Target labels.
+        - initial_solution: Initial solution for optimization.
+        - calculate_gradient: Function to calculate the gradient.
+        - learning_rate: Learning rate for updating the solution (default: 0.01).
+        - max_num_iters: Maximum number of iterations (default: 1000).
+
+        Returns:
+        - The optimized solution.
+        """
+        return mini_batch_gradient_descent().optimize(
+            X,
+            y,
+            initial_solution,
+            calculate_gradient,
+            learning_rate,
+            max_num_epoch,
+            batch_size=1,
+        )
+
+
+class full_batch_gradient_descent(Optimizer):
+    def optimize(
+        self,
+        X,
+        y,
+        initial_solution,
+        calculate_gradient,
+        learning_rate=0.01,
+        max_num_epoch=1000,
+    ):
+        """
+        Performs batch gradient descent optimization.
+
+        Parameters:
+        - X: Input data.
+        - y: Target labels.
+        - initial_solution: Initial solution for optimization.
+        - calculate_gradient: Function to calculate the gradient.
+        - learning_rate: Learning rate for updating the solution (default: 0.01).
+        - max_num_iters: Maximum number of iterations (default: 1000).
+
+        Returns:
+        - The optimized solution.
+        """
+        return mini_batch_gradient_descent().optimize(
+            X,
+            y,
+            initial_solution,
+            calculate_gradient,
+            learning_rate,
+            max_num_epoch,
+            batch_fraction=1,
+        )
 
 
 class mini_batch_gradient_descent_with_momentum(Optimizer):
