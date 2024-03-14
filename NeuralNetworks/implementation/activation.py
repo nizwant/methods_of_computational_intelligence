@@ -4,24 +4,24 @@ import numpy as np
 
 class Activation(ABC):
     @abstractmethod
-    def activation_function(self, x: float):
+    def activation_function(self, x: np.double) -> np.double:
         pass
 
     @abstractmethod
-    def activation_function_derivative(self, x: float):
+    def activation_function_derivative(self, x: np.double) -> np.double:
         pass
 
 
 class Sigmoid(Activation):
-    def activation_function(self, x: float):
+    def activation_function(self, x: np.double) -> np.double:
         return 1 / (1 + np.exp(-x))
 
-    def activation_function_derivative(self, x: float):
+    def activation_function_derivative(self, x: np.double) -> np.double:
         return self.activation_function(x) * (1 - self.activation_function(x))
 
 
 class ReLU(Activation):
-    def activation_function(self, x: float):
+    def activation_function(self, x: np.double) -> np.double:
         return max(0, x)
 
     def activation_function_derivative(self, x: float):
@@ -29,10 +29,10 @@ class ReLU(Activation):
 
 
 class Tanh(Activation):
-    def activation_function(self, x: float):
+    def activation_function(self, x: np.double) -> np.double:
         return np.tanh(x)
 
-    def activation_function_derivative(self, x: float):
+    def activation_function_derivative(self, x: np.double) -> np.double:
         return 1 - np.tanh(x) ** 2
 
 
@@ -43,25 +43,25 @@ class Softmax(Activation):
     It also divides each output such that the total sum of the outputs is equal to 1.
     """
 
-    def activation_function(self, x: float):
+    def activation_function(self, x: np.double) -> np.double:
         exps = np.exp(x - x.max())
         return exps / np.sum(exps)
 
-    def activation_function_derivative(self, x: float):
+    def activation_function_derivative(self, x: np.double) -> np.double:
         return self.activation_function(x) * (1 - self.activation_function(x))
 
 
 class Linear(Activation):
-    def activation_function(self, x: float):
+    def activation_function(self, x: np.double) -> np.double:
         return x
 
-    def activation_function_derivative(self, x: float):
+    def activation_function_derivative(self, x: np.double) -> np.double:
         return 1
 
 
 class LeakyReLU(Activation):
-    def activation_function(self, x: float):
+    def activation_function(self, x: np.double) -> np.double:
         return max(0.01 * x, x)
 
-    def activation_function_derivative(self, x: float):
+    def activation_function_derivative(self, x: np.double) -> np.double:
         return 0.01 if x < 0 else 1

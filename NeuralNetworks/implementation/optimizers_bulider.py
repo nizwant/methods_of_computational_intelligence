@@ -11,7 +11,7 @@ class OptimizersBuilder:
     def __init__(self):
         pass
 
-    def build_optimizer(self, optimizer_name):
+    def build_optimizer(self, optimizer_name: str) -> callable:
         if optimizer_name == "mini_batch_gradient_descent":
             return mini_batch_gradient_descent.optimize
         elif optimizer_name == "stochastic_gradient_descent":
@@ -27,4 +27,4 @@ class OptimizersBuilder:
         elif optimizer_name == "adam":
             return adam.optimize
         else:
-            raise ValueError("Optimizer name is not supported")
+            raise ValueError(f"Optimizer name {optimizer_name} is not supported")
