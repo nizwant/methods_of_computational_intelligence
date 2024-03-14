@@ -138,7 +138,7 @@ class full_batch_gradient_descent(Optimizer):
         max_num_epoch=1000,
     ):
         """
-        Performs batch gradient descent optimization.
+        Performs full batch gradient descent optimization.
 
         Parameters:
         - X: Input data.
