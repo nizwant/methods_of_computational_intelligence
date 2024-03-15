@@ -5,6 +5,8 @@ from activation_bulider import ActivationBuilder
 
 class Layer:
     __slots__ = [
+        "nodes_in",
+        "nodes_out",
         "weights",
         "weights_gradient",
         "biases",
@@ -22,6 +24,10 @@ class Layer:
         weight_initialization="he",
         bias_initialization="zero",
     ):
+
+        self.nodes_in = nodes_in
+        self.nodes_out = nodes_out
+
         self.weights = InitializationBuilder.get_initialization(
             weight_initialization, nodes_in, nodes_out
         )
