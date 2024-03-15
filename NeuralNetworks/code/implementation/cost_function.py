@@ -17,7 +17,7 @@ class MeanSquaredError(CostFunction):
         return np.mean((y - y_hat) ** 2)
 
     def cost_derivative(self, y_hat: np.ndarray, y: np.ndarray) -> float:
-        return 2 * np.mean(y_hat - y)
+        return 2 * np.mean(y_hat - y, axis=1)
 
 
 class AbsoluteError(CostFunction):
