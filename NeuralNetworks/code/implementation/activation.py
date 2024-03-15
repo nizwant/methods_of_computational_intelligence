@@ -22,10 +22,10 @@ class Sigmoid(Activation):
 
 class ReLU(Activation):
     def activation_function(self, x: np.double) -> np.double:
-        return max(0, x)
+        return np.maximum(0, x)
 
     def activation_function_derivative(self, x: float):
-        return 0 if x < 0 else 1
+        return np.where(x < 0, 0, 1)
 
 
 class Tanh(Activation):
@@ -44,8 +44,11 @@ class Softmax(Activation):
     """
 
     def activation_function(self, x: np.double) -> np.double:
-        exps = np.exp(x - x.max())
-        return exps / np.sum(exps)
+        if x.ndim == 1:
+            exps = np.exp(x - np.max(x))
+            return exps / np.sum(exps)
+        exps = np.exp(x - x.max(axis=1, keepdims=True))
+        return exps / np.sum(exps, axis=1, keepdims=True)
 
     def activation_function_derivative(self, x: np.double) -> np.double:
         return self.activation_function(x) * (1 - self.activation_function(x))
@@ -56,12 +59,12 @@ class Linear(Activation):
         return x
 
     def activation_function_derivative(self, x: np.double) -> np.double:
-        return 1
+        return np.ones_like(x)
 
 
 class LeakyReLU(Activation):
     def activation_function(self, x: np.double) -> np.double:
-        return max(0.01 * x, x)
+        return np.maximum(0.01 * x, x)
 
     def activation_function_derivative(self, x: np.double) -> np.double:
-        return 0.01 if x < 0 else 1
+        return np.where(x < 0, 0.01, 1)

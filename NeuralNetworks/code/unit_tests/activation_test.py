@@ -1,6 +1,6 @@
 import unittest
 import numpy as np
-from ..implementation import activation
+from NeuralNetworks.code.implementation import activation
 
 
 class TestActivationFunctions(unittest.TestCase):
@@ -30,3 +30,60 @@ class TestActivationFunctions(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
+
+
+# sigmoid = Sigmoid()
+# print(sigmoid.activation_function(np.array([1.0, 2.0, 3.0])))
+# print(sigmoid.activation_function_derivative(np.array([1.0, 2.0, 3.0])))
+
+# print(sigmoid.activation_function(np.array([[1.0, 2.0, 3.0], [1.0, 2.0, 3.0]])))
+# print(
+#     sigmoid.activation_function_derivative(np.array([[1.0, 2.0, 3.0], [1.0, 2.0, 3.0]]))
+# )
+# print()
+
+# relu = ReLU()
+# print(relu.activation_function(np.array([1.0, -2.0, 3.0])))
+# print(relu.activation_function_derivative(np.array([1.0, -2.0, 3.0])))
+
+# print(relu.activation_function(np.array([[-1.0, 2.0, 3.0], [1.0, -2.0, 3.0]])))
+# print(
+#     relu.activation_function_derivative(np.array([[-1.0, 2.0, 3.0], [1.0, -2.0, 3.0]]))
+# )
+# print()
+
+# tanh = Tanh()
+# print(tanh.activation_function(np.array([1.0, 2.0, 3.0])))
+# print(tanh.activation_function_derivative(np.array([1.0, 2.0, 3.0])))
+# print(tanh.activation_function(np.array([[1.0, 2.0, 3.0], [1.0, 2.0, 3.0]])))
+# print(tanh.activation_function_derivative(np.array([[1.0, 2.0, 3.0], [1.0, 2.0, 3.0]])))
+# print()
+
+# softmax = Softmax()
+# print(softmax.activation_function(np.array([-1.0, 2.0, 3.0])))
+# print(softmax.activation_function_derivative(np.array([-1.0, 2.0, 3.0])))
+# print(softmax.activation_function(np.array([[1.0, 2.0, 6.0], [-11.0, 2.0, 3.0]])))
+# print(
+#     softmax.activation_function_derivative(np.array([[1.0, 2.0, 3.0], [1.0, 2.0, 3.0]]))
+# )
+# print()
+
+# linear = Linear()
+# print(linear.activation_function(np.array([1.0, 2.0, 3.0])))
+# print(linear.activation_function_derivative(np.array([1.0, 2.0, 3.0])))
+# print(linear.activation_function(np.array([[1.0, 2.0, 3.0], [1.0, 2.0, 3.0]])))
+# print(
+#     linear.activation_function_derivative(np.array([[1.0, 2.0, 3.0], [1.0, 2.0, 3.0]]))
+# )
+# print()
+
+# leaky_relu = LeakyReLU()
+# print(leaky_relu.activation_function(np.array([1.0, -2.0, 3.0])))
+# print(leaky_relu.activation_function_derivative(np.array([1.0, 2.0, -3.0])))
+# print(leaky_relu.activation_function(np.array([[-1.0, 2.0, 3.0], [1.0, 2.0, -3.0]])))
+# print(
+#     leaky_relu.activation_function_derivative(
+#         np.array([[1.0, 2.0, 3.0], [1.0, -2.0, 3.0]])
+#     )
+# )
+# print()
