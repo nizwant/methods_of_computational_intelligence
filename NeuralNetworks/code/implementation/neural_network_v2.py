@@ -24,6 +24,8 @@ class NeuralNetwork:
         self.layer_sizes.append(layer.nodes_out)
 
     def forward(self, x: np.ndarray):
+        if x is pd.DataFrame:
+            x = x.to_numpy()
         a = x
         for layer in self.layers:
             a = layer.forward(a)
@@ -121,3 +123,24 @@ class NeuralNetwork:
         for i, layer in enumerate(self.layers, 1):
             print(layer.report_layer(i))
         return ""
+
+    def flatten_weights_and_biases(self):
+        weights_and_biases = []
+        for layer in self.layers:
+            weights_and_biases.append(layer.weights.flatten())
+            weights_and_biases.append(layer.biases.flatten())
+        return np.concatenate(weights_and_biases)
+
+    def deflatten_weights_and_biases(self, solution):
+        for layer in self.layers:
+            layer.weights = solution[: layer.weights.size].reshape(layer.weights.shape)
+            solution = solution[layer.weights.size :]
+            layer.biases = solution[: layer.biases.size].reshape(layer.biases.shape)
+            solution = solution[layer.biases.size :]
+
+    def flatted_gradient(self):
+        gradients = []
+        for layer in self.layers:
+            gradients.append(layer.weights_gradient.flatten())
+            gradients.append(layer.biases_gradient.flatten())
+        return np.concatenate(gradients)
