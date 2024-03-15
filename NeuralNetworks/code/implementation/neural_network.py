@@ -3,7 +3,7 @@ import pandas as pd
 import matplotlib.pyplot as plt
 import networkx as nx
 from matplotlib.colors import LinearSegmentedColormap
-from .layer import Layer
+from layer import Layer
 
 
 class NeuralNetwork:
@@ -358,3 +358,14 @@ class NeuralNetwork:
             markersize=10,
         )
         plt.legend(handles=[red_patch, green_patch])
+
+
+np.random.seed(0)
+neural = NeuralNetwork([2], 1, 1)
+neural.backpropagation(np.array([[2], [1], [3]]), np.array([[1], [2], [4]]))
+for layer in neural.layers:
+    print(layer.weights_gradient)
+    print(layer.biases_gradient)
+    print("\n")
+
+# print(neural.layers[-1].delta)

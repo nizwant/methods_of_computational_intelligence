@@ -144,3 +144,43 @@ class NeuralNetwork:
             gradients.append(layer.weights_gradient.flatten())
             gradients.append(layer.biases_gradient.flatten())
         return np.concatenate(gradients)
+
+    def backpropagation(self, x: np.ndarray, y: np.ndarray):
+        a = self.forward(x)
+        delta = self.cost_function.cost_derivative(a, y) * self.layers[
+            -1
+        ].activation.activation_derivative(self.layers[-1].z)
+        for previous_layer, layer in zip(self.layers[-2::-1], self.layers[::-1]):
+            layer.biases_gradient = np.mean(delta, axis=0)
+            layer.weights_gradient = np.dot(delta.T, previous_layer.a)
+            delta = np.dot(
+                delta, layer.weights.T
+            ) * layer.activation.activation_derivative(layer.z)
+
+
+nn = NeuralNetwork()
+
+np.random.seed(0)
+
+nn.add_layer(
+    Layer(
+        1,
+        2,
+        activation="sigmoid",
+        weight_initialization="normal",
+        bias_initialization="normal",
+    )
+)
+nn.add_layer(
+    Layer(
+        2,
+        1,
+        activation="linear",
+        weight_initialization="normal",
+        bias_initialization="normal",
+    )
+)
+
+print(nn.flatted_gradient())
+nn.backpropagation(np.array([[2], [1], [3]]), np.array([[1], [2], [4]]))
+print(nn.flatted_gradient())
