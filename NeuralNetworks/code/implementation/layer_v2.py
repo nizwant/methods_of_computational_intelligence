@@ -47,7 +47,7 @@ class Layer:
 
     def forward(self, a):
         self.z = np.dot(a, self.weights) + self.biases
-        self.a = self.activation.activation_function(self.z)
+        self.a = self.activation.activation(self.z)
         return self.a
 
     def report_layer(self, layer_num):

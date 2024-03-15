@@ -6,24 +6,24 @@ from NeuralNetworks.code.implementation import activation
 class TestActivationFunctions(unittest.TestCase):
     def test_sigmoid(self):
         sigmoid = activation.Sigmoid()
-        self.assertAlmostEqual(sigmoid.activation_function(0), 0.5)
-        self.assertAlmostEqual(sigmoid.activation_function_derivative(0), 0.25)
+        self.assertAlmostEqual(sigmoid.activation(0), 0.5)
+        self.assertAlmostEqual(sigmoid.activation_derivative(0), 0.25)
 
     def test_relu(self):
         relu = activation.ReLU()
-        self.assertEqual(relu.activation_function(-1), 0)
-        self.assertEqual(relu.activation_function_derivative(-1), 0)
-        self.assertEqual(relu.activation_function(1), 1)
-        self.assertEqual(relu.activation_function_derivative(1), 1)
+        self.assertEqual(relu.activation(-1), 0)
+        self.assertEqual(relu.activation_derivative(-1), 0)
+        self.assertEqual(relu.activation(1), 1)
+        self.assertEqual(relu.activation_derivative(1), 1)
 
     def test_tanh(self):
         tanh = activation.Tanh()
-        self.assertAlmostEqual(tanh.activation_function(0), 0)
-        self.assertAlmostEqual(tanh.activation_function_derivative(0), 1)
+        self.assertAlmostEqual(tanh.activation(0), 0)
+        self.assertAlmostEqual(tanh.activation_derivative(0), 1)
 
     def test_softmax(self):
         softmax = activation.Softmax()
-        result = softmax.activation_function(np.array([1.0, 2.0, 3.0]))
+        result = softmax.activation(np.array([1.0, 2.0, 3.0]))
         self.assertAlmostEqual(np.sum(result), 1)
         self.assertTrue((result >= 0).all() and (result <= 1).all())
 
@@ -33,56 +33,56 @@ if __name__ == "__main__":
 
 
 # sigmoid = Sigmoid()
-# print(sigmoid.activation_function(np.array([1.0, 2.0, 3.0])))
-# print(sigmoid.activation_function_derivative(np.array([1.0, 2.0, 3.0])))
+# print(sigmoid.activation(np.array([1.0, 2.0, 3.0])))
+# print(sigmoid.activation_derivative (np.array([1.0, 2.0, 3.0])))
 
-# print(sigmoid.activation_function(np.array([[1.0, 2.0, 3.0], [1.0, 2.0, 3.0]])))
+# print(sigmoid.activation(np.array([[1.0, 2.0, 3.0], [1.0, 2.0, 3.0]])))
 # print(
-#     sigmoid.activation_function_derivative(np.array([[1.0, 2.0, 3.0], [1.0, 2.0, 3.0]]))
+#     sigmoid.activation_derivative (np.array([[1.0, 2.0, 3.0], [1.0, 2.0, 3.0]]))
 # )
 # print()
 
 # relu = ReLU()
-# print(relu.activation_function(np.array([1.0, -2.0, 3.0])))
-# print(relu.activation_function_derivative(np.array([1.0, -2.0, 3.0])))
+# print(relu.activation(np.array([1.0, -2.0, 3.0])))
+# print(relu.activation_derivative (np.array([1.0, -2.0, 3.0])))
 
-# print(relu.activation_function(np.array([[-1.0, 2.0, 3.0], [1.0, -2.0, 3.0]])))
+# print(relu.activation(np.array([[-1.0, 2.0, 3.0], [1.0, -2.0, 3.0]])))
 # print(
-#     relu.activation_function_derivative(np.array([[-1.0, 2.0, 3.0], [1.0, -2.0, 3.0]]))
+#     relu.activation_derivative (np.array([[-1.0, 2.0, 3.0], [1.0, -2.0, 3.0]]))
 # )
 # print()
 
 # tanh = Tanh()
-# print(tanh.activation_function(np.array([1.0, 2.0, 3.0])))
-# print(tanh.activation_function_derivative(np.array([1.0, 2.0, 3.0])))
-# print(tanh.activation_function(np.array([[1.0, 2.0, 3.0], [1.0, 2.0, 3.0]])))
-# print(tanh.activation_function_derivative(np.array([[1.0, 2.0, 3.0], [1.0, 2.0, 3.0]])))
+# print(tanh.activation(np.array([1.0, 2.0, 3.0])))
+# print(tanh.activation_derivative (np.array([1.0, 2.0, 3.0])))
+# print(tanh.activation(np.array([[1.0, 2.0, 3.0], [1.0, 2.0, 3.0]])))
+# print(tanh.activation_derivative (np.array([[1.0, 2.0, 3.0], [1.0, 2.0, 3.0]])))
 # print()
 
 # softmax = Softmax()
-# print(softmax.activation_function(np.array([-1.0, 2.0, 3.0])))
-# print(softmax.activation_function_derivative(np.array([-1.0, 2.0, 3.0])))
-# print(softmax.activation_function(np.array([[1.0, 2.0, 6.0], [-11.0, 2.0, 3.0]])))
+# print(softmax.activation(np.array([-1.0, 2.0, 3.0])))
+# print(softmax.activation_derivative (np.array([-1.0, 2.0, 3.0])))
+# print(softmax.activation(np.array([[1.0, 2.0, 6.0], [-11.0, 2.0, 3.0]])))
 # print(
-#     softmax.activation_function_derivative(np.array([[1.0, 2.0, 3.0], [1.0, 2.0, 3.0]]))
+#     softmax.activation_derivative (np.array([[1.0, 2.0, 3.0], [1.0, 2.0, 3.0]]))
 # )
 # print()
 
 # linear = Linear()
-# print(linear.activation_function(np.array([1.0, 2.0, 3.0])))
-# print(linear.activation_function_derivative(np.array([1.0, 2.0, 3.0])))
-# print(linear.activation_function(np.array([[1.0, 2.0, 3.0], [1.0, 2.0, 3.0]])))
+# print(linear.activation(np.array([1.0, 2.0, 3.0])))
+# print(linear.activation_derivative (np.array([1.0, 2.0, 3.0])))
+# print(linear.activation(np.array([[1.0, 2.0, 3.0], [1.0, 2.0, 3.0]])))
 # print(
-#     linear.activation_function_derivative(np.array([[1.0, 2.0, 3.0], [1.0, 2.0, 3.0]]))
+#     linear.activation_derivative (np.array([[1.0, 2.0, 3.0], [1.0, 2.0, 3.0]]))
 # )
 # print()
 
 # leaky_relu = LeakyReLU()
-# print(leaky_relu.activation_function(np.array([1.0, -2.0, 3.0])))
-# print(leaky_relu.activation_function_derivative(np.array([1.0, 2.0, -3.0])))
-# print(leaky_relu.activation_function(np.array([[-1.0, 2.0, 3.0], [1.0, 2.0, -3.0]])))
+# print(leaky_relu.activation(np.array([1.0, -2.0, 3.0])))
+# print(leaky_relu.activation_derivative (np.array([1.0, 2.0, -3.0])))
+# print(leaky_relu.activation(np.array([[-1.0, 2.0, 3.0], [1.0, 2.0, -3.0]])))
 # print(
-#     leaky_relu.activation_function_derivative(
+#     leaky_relu.activation_derivative (
 #         np.array([[1.0, 2.0, 3.0], [1.0, -2.0, 3.0]])
 #     )
 # )
