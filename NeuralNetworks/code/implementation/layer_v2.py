@@ -49,3 +49,8 @@ class Layer:
         self.z = np.dot(a, self.weights) + self.biases
         self.a = self.activation.activation_function(self.z)
         return self.a
+
+    def report_layer(self, layer_num):
+        return (
+            f"Layer number {layer_num}\nWeights\n{self.weights}\nbiases\n{self.biases}"
+        )

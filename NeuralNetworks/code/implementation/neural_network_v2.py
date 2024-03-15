@@ -116,3 +116,8 @@ class NeuralNetwork:
         )
         plt.legend(handles=[red_patch, green_patch])
         plt.show()
+
+    def __str__(self) -> str:
+        for i, layer in enumerate(self.layers, 1):
+            print(layer.report_layer(i))
+        return ""
