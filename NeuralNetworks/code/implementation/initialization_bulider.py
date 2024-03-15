@@ -9,20 +9,20 @@ from initialization import Zero
 
 class InitializationBuilder:
     @staticmethod
-    def get_initialization(initialization: str):
+    def get_initialization(initialization: str, nodes_in: int, nodes_out: int):
         if initialization == "he":
-            return He()
+            return He().initialize(nodes_in, nodes_out)
         elif initialization == "normal":
-            return Normal()
+            return Normal().initialize(nodes_in, nodes_out)
         elif initialization == "normal_xavier":
-            return NormalXavier()
+            return NormalXavier().initialize(nodes_in, nodes_out)
         elif initialization == "uniform_xavier":
-            return UniformXavier()
+            return UniformXavier().initialize(nodes_in, nodes_out)
         elif initialization == "uniform_minus_one_one":
-            return Uniform_minus_one_one()
+            return Uniform_minus_one_one().initialize(nodes_in, nodes_out)
         elif initialization == "uniform_zero_one":
-            return Uniform_zero_one()
+            return Uniform_zero_one().initialize(nodes_in, nodes_out)
         elif initialization == "zero":
-            return Zero()
+            return Zero().initialize(nodes_in, nodes_out)
         else:
             raise ValueError(f"Initialization function {initialization} not supported")
