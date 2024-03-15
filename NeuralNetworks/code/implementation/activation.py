@@ -8,7 +8,7 @@ class Activation(ABC):
         pass
 
     @abstractmethod
-    def activation_derivative(self, x: np.double) -> np.double:
+    def derivative(self, x: np.double) -> np.double:
         pass
 
 
@@ -16,7 +16,7 @@ class Sigmoid(Activation):
     def activation(self, x: np.double) -> np.double:
         return 1 / (1 + np.exp(-x))
 
-    def activation_derivative(self, x: np.double) -> np.double:
+    def derivative(self, x: np.double) -> np.double:
         return self.activation(x) * (1 - self.activation(x))
 
 
@@ -24,7 +24,7 @@ class ReLU(Activation):
     def activation(self, x: np.double) -> np.double:
         return np.maximum(0, x)
 
-    def activation_derivative(self, x: float):
+    def derivative(self, x: float):
         return np.where(x < 0, 0, 1)
 
 
@@ -32,7 +32,7 @@ class Tanh(Activation):
     def activation(self, x: np.double) -> np.double:
         return np.tanh(x)
 
-    def activation_derivative(self, x: np.double) -> np.double:
+    def derivative(self, x: np.double) -> np.double:
         return 1 - np.tanh(x) ** 2
 
 
@@ -50,7 +50,7 @@ class Softmax(Activation):
         exps = np.exp(x - x.max(axis=1, keepdims=True))
         return exps / np.sum(exps, axis=1, keepdims=True)
 
-    def activation_derivative(self, x: np.double) -> np.double:
+    def derivative(self, x: np.double) -> np.double:
         return self.activation(x) * (1 - self.activation(x))
 
 
@@ -58,7 +58,7 @@ class Linear(Activation):
     def activation(self, x: np.double) -> np.double:
         return x
 
-    def activation_derivative(self, x: np.double) -> np.double:
+    def derivative(self, x: np.double) -> np.double:
         return np.ones_like(x)
 
 
@@ -66,5 +66,5 @@ class LeakyReLU(Activation):
     def activation(self, x: np.double) -> np.double:
         return np.maximum(0.01 * x, x)
 
-    def activation_derivative(self, x: np.double) -> np.double:
+    def derivative(self, x: np.double) -> np.double:
         return np.where(x < 0, 0.01, 1)
