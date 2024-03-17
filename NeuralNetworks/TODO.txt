@@ -1,6 +1,5 @@
 implement automatic dimensions 
 write tests 
-refactor code 
 
 visualization ideas:
 - different accuracy of calculating numerically the gradient
@@ -12,4 +11,3 @@ visualization ideas:
 - different initializations methods
 - different activation functions
 - bias == 0 vs bias != 0
-- different stages of vectorization ie forward backward itp 

@@ -145,6 +145,30 @@ class NeuralNetwork:
             gradients.append(layer.biases_gradient.flatten())
         return np.concatenate(gradients)
 
+    def calculate_gradient_numerically(self, x: np.ndarray, y: np.ndarray, h=1e-5):
+        """
+        THIS FUNCTION IS ONLY FOR EXPERIMENTAL PURPOSES
+        It calculates the gradient numerically and compares it with the gradient calculated by backpropagation
+        It is to slow to be used in practice
+        """
+        initial_cost = self.cost_function.cost(self.forward(x), y)
+        for layer in self.layers:
+            for i in range(layer.weights.shape[0]):
+                for j in range(layer.weights.shape[1]):
+                    layer.weights[i, j] += h
+                    new_cost = self.cost_function.cost(self.forward(x), y)
+                    layer.weights[i, j] -= h
+
+                    layer.weights_gradient[i, j] = (new_cost - initial_cost) / h
+
+            for i in range(layer.biases.shape[0]):
+                for j in range(layer.biases.shape[1]):
+                    layer.biases[i, j] += h
+                    new_cost = self.cost_function.cost(self.forward(x), y)
+                    layer.biases[i, j] -= h
+
+                    layer.biases_gradient[i, j] = (new_cost - initial_cost) / h
+
     def backpropagation(self, x: np.ndarray, y: np.ndarray):
         a = self.forward(x)
         delta = (
@@ -182,6 +206,32 @@ nn.add_layer(
     )
 )
 
+nn.calculate_gradient_numerically(np.array([[2], [1], [3]]), np.array([[1], [2], [4]]))
 print(nn.flatted_gradient())
+
+
+nn = NeuralNetwork()
+np.random.seed(0)
+nn.add_layer(
+    Layer(
+        1,
+        2,
+        activation="sigmoid",
+        weight_initialization="normal",
+        bias_initialization="normal",
+    )
+)
+nn.add_layer(
+    Layer(
+        2,
+        1,
+        activation="linear",
+        weight_initialization="normal",
+        bias_initialization="normal",
+    )
+)
+
 nn.backpropagation(np.array([[2], [1], [3]]), np.array([[1], [2], [4]]))
 print(nn.flatted_gradient())
+
+print(nn.cost_function.cost(nn.forward([[2], [1], [3]]), [[1], [2], [4]]))
