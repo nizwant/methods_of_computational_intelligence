@@ -321,6 +321,48 @@ class NeuralNetwork:
                 print("Epoch:", i)
         return mse_list, mse_after_epoch
 
+    def mini_batch_gradient_descent(
+        self,
+        X,
+        y,
+        learning_rate=0.01,
+        max_num_epoch=1000,
+        batch_size=1,
+        batch_fraction=None,
+        silent=False,
+    ):
+        # initialization
+        if type(X) is pd.DataFrame:
+            X = X.to_numpy()
+        if type(y) is pd.DataFrame:
+            y = y.to_numpy().T
+
+        # set batch size
+        assert type(batch_size) is int, "batch_size must be an integer"
+        if batch_fraction is not None:
+            assert 0 < batch_fraction <= 1, "batch_fraction must be between 0 and 1"
+            batch_size = int(X.shape[0] * batch_fraction)
+        iterations = int(X.shape[0] / batch_size)
+        mse_list = []
+        mse_after_epoch = []
+
+        for i in range(max_num_epoch):
+            N = X.shape[0]
+            shuffled_idx = np.random.permutation(N)
+            X, y = X[shuffled_idx], y[shuffled_idx]
+            for idx in range(iterations):
+                X_selected, y_selected = (
+                    X[idx * batch_size : (idx + 1) * batch_size],
+                    y[idx * batch_size : (idx + 1) * batch_size],
+                )
+                self.backpropagation(X_selected, y_selected)
+                self.apply_gradient(learning_rate)
+                mse_list.append(self.mean_squared_error(X_selected, y_selected))
+            mse_after_epoch.append(self.mean_squared_error(X, y))
+            if not silent:
+                print("Epoch:", i)
+        return mse_list, mse_after_epoch
+
     def visualize_network(self):
         """
         Visualize the network architecture
