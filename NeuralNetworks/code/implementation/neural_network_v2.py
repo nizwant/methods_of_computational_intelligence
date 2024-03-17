@@ -182,56 +182,26 @@ class NeuralNetwork:
                 layer.z
             )
 
-
-nn = NeuralNetwork()
-
-np.random.seed(0)
-
-nn.add_layer(
-    Layer(
-        1,
-        2,
-        activation="sigmoid",
-        weight_initialization="normal",
-        bias_initialization="normal",
-    )
-)
-nn.add_layer(
-    Layer(
-        2,
-        1,
-        activation="linear",
-        weight_initialization="normal",
-        bias_initialization="normal",
-    )
-)
-
-nn.calculate_gradient_numerically(np.array([[2], [1], [3]]), np.array([[1], [2], [4]]))
-print(nn.flatted_gradient())
-
-
-nn = NeuralNetwork()
-np.random.seed(0)
-nn.add_layer(
-    Layer(
-        1,
-        2,
-        activation="sigmoid",
-        weight_initialization="normal",
-        bias_initialization="normal",
-    )
-)
-nn.add_layer(
-    Layer(
-        2,
-        1,
-        activation="linear",
-        weight_initialization="normal",
-        bias_initialization="normal",
-    )
-)
-
-nn.backpropagation(np.array([[2], [1], [3]]), np.array([[1], [2], [4]]))
-print(nn.flatted_gradient())
-
-print(nn.cost_function.cost(nn.forward([[2], [1], [3]]), [[1], [2], [4]]))
+    def train(
+        self,
+        X,
+        y,
+        learning_rate=0.01,
+        max_num_epoch=1000,
+        batch_size=24,
+        batch_fraction=None,
+        calculate_gradient=backpropagation,
+    ):
+        initial_solution = self.flatten_weights_and_biases()
+        solution = self.optimizer(
+            X=X,
+            y=y,
+            initial_solution=initial_solution,
+            calculate_gradient=calculate_gradient,
+            learning_rate=learning_rate,
+            max_num_epoch=max_num_epoch,
+            batch_size=batch_size,
+            batch_fraction=batch_fraction,
+        )
+        self.deflatten_weights_and_biases(solution)
+        return solution
