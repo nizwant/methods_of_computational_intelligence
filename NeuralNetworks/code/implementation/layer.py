@@ -110,6 +110,14 @@ class Layer:
             + (1 - momentum_decay) * self.weights_gradient
         )
 
+    def calculate_momentum_v2(self, momentum_decay):
+        self.biases_momentum = (
+            momentum_decay * self.biases_momentum + self.biases_gradient
+        )
+        self.weights_momentum = (
+            momentum_decay * self.weights_momentum + self.weights_gradient
+        )
+
     def calculate_gradient_squared(self, decay_rate):
         self.biases_gradient_squared = (
             decay_rate * self.biases_gradient_squared
@@ -139,3 +147,7 @@ class Layer:
             * self.biases_momentum
             / (1 - momentum_decay**t)
         )
+
+    def calculate_changes_v2(self, learning_rate):
+        self.weights_changes = learning_rate * self.weights_momentum
+        self.biases_changes = learning_rate * self.biases_momentum

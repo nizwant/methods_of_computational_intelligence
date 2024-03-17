@@ -111,18 +111,31 @@ class NeuralNetwork:
             layer.apply_changes()
 
     def calculate_momentum(self, momentum_decay):
+        """adam"""
         for layer in self.layers:
             layer.calculate_momentum(momentum_decay)
 
+    def calculate_momentum_v2(self, momentum_decay):
+        """momentum"""
+        for layer in self.layers:
+            layer.calculate_momentum_v2(momentum_decay)
+
     def calculate_gradient_squared(self, decay_rate):
+        """adam"""
         for layer in self.layers:
             layer.calculate_gradient_squared(decay_rate)
 
     def calculate_changes(self, learning_rate, epsilon, t, momentum_decay, decay_rate):
+        """adam"""
         for layer in self.layers:
             layer.calculate_changes(
                 learning_rate, epsilon, t, momentum_decay, decay_rate
             )
+
+    def calculate_changes_v2(self, learning_rate):
+        """momentum"""
+        for layer in self.layers:
+            layer.calculate_changes_v2(learning_rate)
 
     def calculate_gradient(self, input, output):
         """
@@ -174,6 +187,7 @@ class NeuralNetwork:
             batch_size = int(X.shape[0] * batch_fraction)
         iterations = int(X.shape[0] / batch_size)
         mse_list = []
+        mse_after_epoch = []
 
         for i in range(max_num_epoch):
             N = X.shape[0]
@@ -199,9 +213,55 @@ class NeuralNetwork:
                 )
                 self.apply_changes()
                 mse_list.append(self.mean_squared_error(X_selected, y_selected))
+            mse_after_epoch.append(self.mean_squared_error(X, y))
             if not silent:
                 print("Epoch:", i)
-        return mse_list
+        return mse_list, mse_after_epoch
+
+    def mini_batch_gradient_descent_with_momentum(
+        self,
+        X,
+        y,
+        learning_rate=0.01,
+        momentum_decay=0.9,
+        max_num_epoch=1000,
+        batch_size=1,
+        batch_fraction=None,
+        silent=False,
+    ):
+        # initialization
+        if type(X) is pd.DataFrame:
+            X = X.to_numpy()
+        if type(y) is pd.DataFrame:
+            y = y.to_numpy().T
+
+        # set batch size
+        assert type(batch_size) is int, "batch_size must be an integer"
+        if batch_fraction is not None:
+            assert 0 < batch_fraction <= 1, "batch_fraction must be between 0 and 1"
+            batch_size = int(X.shape[0] * batch_fraction)
+        iterations = int(X.shape[0] / batch_size)
+        mse_list = []
+        mse_after_epoch = []
+
+        for i in range(max_num_epoch):
+            N = X.shape[0]
+            shuffled_idx = np.random.permutation(N)
+            X, y = X[shuffled_idx], y[shuffled_idx]
+            for idx in range(iterations):
+                X_selected, y_selected = (
+                    X[idx * batch_size : (idx + 1) * batch_size],
+                    y[idx * batch_size : (idx + 1) * batch_size],
+                )
+                self.backpropagation(X_selected, y_selected)
+                self.calculate_momentum_v2(momentum_decay)
+                self.calculate_changes_v2(learning_rate)
+                self.apply_changes()
+                mse_list.append(self.mean_squared_error(X_selected, y_selected))
+            mse_after_epoch.append(self.mean_squared_error(X, y))
+            if not silent:
+                print("Epoch:", i)
+        return mse_list, mse_after_epoch
 
     def visualize_network(self):
         """
