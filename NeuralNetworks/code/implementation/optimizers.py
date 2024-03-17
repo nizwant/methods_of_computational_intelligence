@@ -18,14 +18,16 @@ class Optimizer(ABC):
     ):
         pass
 
-    def transfer_data_to_numpy(self, X, y):
+    @staticmethod
+    def transfer_data_to_numpy(X, y):
         if type(X) is pd.DataFrame:
             X = X.to_numpy()
         if type(y) is pd.DataFrame:
             y = y.to_numpy().T
         return X, y
 
-    def calculate_batch_size_and_iteration(self, batch_size, batch_fraction, X):
+    @staticmethod
+    def calculate_batch_size_and_iteration(batch_size, batch_fraction, X):
         """
         Calculate batch size and number of iterations for the optimizer
         If batch_fraction is provided (not None), batch_size is calculated as a fraction of the dataset
@@ -41,8 +43,8 @@ class Optimizer(ABC):
 
 class mini_batch_gradient_descent(Optimizer):
 
+    @staticmethod
     def optimize(
-        self,
         X,
         y,
         initial_solution,
@@ -69,8 +71,8 @@ class mini_batch_gradient_descent(Optimizer):
         - The optimized solution.
         """
 
-        X, y = self.transfer_data_to_numpy(X, y)
-        batch_size, iterations = self.calculate_batch_size_and_iteration(
+        X, y = Optimizer.transfer_data_to_numpy(X, y)
+        batch_size, iterations = Optimizer.calculate_batch_size_and_iteration(
             batch_size, batch_fraction, X
         )
 
@@ -93,8 +95,8 @@ class mini_batch_gradient_descent(Optimizer):
 
 class stochastic_gradient_descent(Optimizer):
 
+    @staticmethod
     def optimize(
-        self,
         X,
         y,
         initial_solution,
@@ -128,8 +130,8 @@ class stochastic_gradient_descent(Optimizer):
 
 
 class full_batch_gradient_descent(Optimizer):
+    @staticmethod
     def optimize(
-        self,
         X,
         y,
         initial_solution,
@@ -163,8 +165,8 @@ class full_batch_gradient_descent(Optimizer):
 
 
 class mini_batch_gradient_descent_with_momentum(Optimizer):
+    @staticmethod
     def optimize(
-        self,
         X,
         y,
         initial_solution,
@@ -193,8 +195,8 @@ class mini_batch_gradient_descent_with_momentum(Optimizer):
         - The optimized solution.
         """
 
-        X, y = self.transfer_data_to_numpy(X, y)
-        batch_size, iterations = self.calculate_batch_size_and_iteration(
+        X, y = Optimizer.transfer_data_to_numpy(X, y)
+        batch_size, iterations = Optimizer.calculate_batch_size_and_iteration(
             batch_size, batch_fraction, X
         )
 
@@ -219,8 +221,8 @@ class mini_batch_gradient_descent_with_momentum(Optimizer):
 
 class adagrad(Optimizer):
 
+    @staticmethod
     def optimize(
-        self,
         X,
         y,
         initial_solution,
@@ -249,8 +251,8 @@ class adagrad(Optimizer):
         - The optimized solution.
         """
 
-        X, y = self.transfer_data_to_numpy(X, y)
-        batch_size, iterations = self.calculate_batch_size_and_iteration(
+        X, y = Optimizer.transfer_data_to_numpy(X, y)
+        batch_size, iterations = Optimizer.calculate_batch_size_and_iteration(
             batch_size, batch_fraction, X
         )
 
@@ -276,8 +278,8 @@ class adagrad(Optimizer):
 
 
 class rmsprop(Optimizer):
+    @staticmethod
     def optimize(
-        self,
         X,
         y,
         initial_solution,
@@ -308,8 +310,8 @@ class rmsprop(Optimizer):
         - The optimized solution.
         """
 
-        X, y = self.transfer_data_to_numpy(X, y)
-        batch_size, iterations = self.calculate_batch_size_and_iteration(
+        X, y = Optimizer.transfer_data_to_numpy(X, y)
+        batch_size, iterations = Optimizer.calculate_batch_size_and_iteration(
             batch_size, batch_fraction, X
         )
 
@@ -338,8 +340,8 @@ class rmsprop(Optimizer):
 
 
 class adam(Optimizer):
+    @staticmethod
     def optimize(
-        self,
         X,
         y,
         initial_solution,
@@ -372,8 +374,8 @@ class adam(Optimizer):
         - The optimized solution.
         """
 
-        X, y = self.transfer_data_to_numpy(X, y)
-        batch_size, iterations = self.calculate_batch_size_and_iteration(
+        X, y = Optimizer.transfer_data_to_numpy(X, y)
+        batch_size, iterations = Optimizer.calculate_batch_size_and_iteration(
             batch_size, batch_fraction, X
         )
 
@@ -385,7 +387,7 @@ class adam(Optimizer):
         for _ in range(max_num_epoch):
             N = X.shape[0]
             shuffled_idx = np.random.permutation(N)
-            X, y = X[shuffled_idx], y[shuffled_idx]
+            # X, y = X[shuffled_idx], y[shuffled_idx]
             for idx in range(iterations):
                 X_selected, y_selected = (
                     X[idx * batch_size : (idx + 1) * batch_size],
