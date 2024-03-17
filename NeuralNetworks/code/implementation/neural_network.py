@@ -34,24 +34,6 @@ class NeuralNetwork:
             input = layer.calculate_layer(input)
         return input
 
-    def train(
-        self, input, output, learning_rate=0.003, batch_size_frac=0.1, epochs=30000
-    ):
-        """
-        Train the network on a given dataset
-        """
-        mse_list = []
-        for epoch in range(epochs):
-            merged = input.to_frame().join(output)
-            merged = merged.sample(frac=batch_size_frac)
-            self.calculate_gradient(merged["x"], merged["y"])
-            self.apply_gradient(learning_rate)
-            mse = self.mean_squared_error(merged["x"], merged["y"])
-            mse_list.append(mse)
-            if epoch % 2000 == 0:
-                print(f"Epoch {epoch} MSE: {mse}")
-        return mse_list
-
     def backpropagation(self, input, output):
         """
         Perform backpropagation on the network
@@ -88,6 +70,10 @@ class NeuralNetwork:
             for previous_layer, layer in zip(self.layers, self.layers[1:]):
                 layer.biases_gradient += layer.delta
                 layer.weights_gradient += np.dot(previous_layer.a.T, layer.delta)
+                # print(
+                #     f"previous a {previous_layer.a.T} * delta {layer.delta} = {np.dot(previous_layer.a.T, layer.delta)}"
+                # )
+                # print()
 
         for layer in self.layers:
             layer.biases_gradient = layer.biases_gradient / len(input)
@@ -171,61 +157,6 @@ class NeuralNetwork:
         batch_size=1,
         batch_fraction=None,
         epsilon=1e-8,
-    ):
-
-        # initialization
-        if type(X) is pd.DataFrame:
-            X = X.to_numpy()
-        if type(y) is pd.DataFrame:
-            y = y.to_numpy().T
-        counter = 0
-
-        # set batch size
-        assert type(batch_size) is int, "batch_size must be an integer"
-        if batch_fraction is not None:
-            assert 0 < batch_fraction <= 1, "batch_fraction must be between 0 and 1"
-            batch_size = int(X.shape[0] * batch_fraction)
-        iterations = int(X.shape[0] / batch_size)
-        mse_list = []
-
-        for i in range(max_num_epoch):
-            N = X.shape[0]
-            shuffled_idx = np.random.permutation(N)
-            # X, y = X[shuffled_idx], y[shuffled_idx]
-            for idx in range(iterations):
-                X_selected, y_selected = (
-                    X[idx * batch_size : (idx + 1) * batch_size],
-                    y[idx * batch_size : (idx + 1) * batch_size],
-                )
-                self.calculate_gradient(X_selected, y_selected)
-                self.calculate_momentum(momentum_decay)
-                self.calculate_gradient_squared(squared_gradient_decay)
-                counter += 1
-
-                self.calculate_changes(
-                    learning_rate,
-                    epsilon,
-                    counter,
-                    momentum_decay,
-                    squared_gradient_decay,
-                )
-                self.apply_changes()
-                mse_list.append(self.mean_squared_error(X_selected, y_selected))
-
-            print("Epoch:", i)
-        return mse_list
-
-    def adam_debug(
-        self,
-        X,
-        y,
-        learning_rate=0.01,
-        momentum_decay=0.9,
-        squared_gradient_decay=0.999,
-        max_num_epoch=1000,
-        batch_size=1,
-        batch_fraction=None,
-        epsilon=1e-8,
         silent=False,
     ):
 
@@ -247,7 +178,7 @@ class NeuralNetwork:
         for i in range(max_num_epoch):
             N = X.shape[0]
             shuffled_idx = np.random.permutation(N)
-            # X, y = X[shuffled_idx], y[shuffled_idx]
+            X, y = X[shuffled_idx], y[shuffled_idx]
             for idx in range(iterations):
                 X_selected, y_selected = (
                     X[idx * batch_size : (idx + 1) * batch_size],
@@ -360,12 +291,21 @@ class NeuralNetwork:
         plt.legend(handles=[red_patch, green_patch])
 
 
-np.random.seed(0)
-neural = NeuralNetwork([2], 1, 1)
-neural.backpropagation(np.array([[2], [1], [3]]), np.array([[1], [2], [4]]))
-for layer in neural.layers:
-    print(layer.weights_gradient)
-    print(layer.biases_gradient)
-    print("\n")
+def main():
+    np.random.seed(0)
+    neural = NeuralNetwork([12], 1, 1)
+    df = pd.read_csv(
+        "https://raw.githubusercontent.com/nizwant/miowid/main/data/regression/square-small-test.csv"
+    )
 
-# print(neural.layers[-1].delta)
+    neural.backpropagation(df[["x"]].to_numpy(), df[["y"]].to_numpy())
+    for layer in neural.layers:
+        print(layer.weights_gradient)
+        print(layer.biases_gradient)
+        print("\n")
+
+    # print(neural.layers[-1].delta)
+
+
+if __name__ == "__main__":
+    main()
