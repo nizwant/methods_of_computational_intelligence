@@ -128,6 +128,16 @@ class Layer:
             + (1 - decay_rate) * self.weights_gradient**2
         )
 
+    def calculate_gradient_squared_v3(self, decay_rate):
+        self.biases_gradient_squared = (
+            decay_rate * self.biases_gradient_squared
+            + (1 - decay_rate) * self.biases_gradient**2
+        )
+        self.weights_gradient_squared = (
+            decay_rate * self.weights_gradient_squared
+            + (1 - decay_rate) * self.weights_gradient**2
+        )
+
     def calculate_changes(self, learning_rate, epsilon, t, momentum_decay, decay_rate):
         self.weights_changes = (
             (
@@ -151,3 +161,16 @@ class Layer:
     def calculate_changes_v2(self, learning_rate):
         self.weights_changes = learning_rate * self.weights_momentum
         self.biases_changes = learning_rate * self.biases_momentum
+
+    def calculate_changes_v3(self, learning_rate, epsilon):
+        self.weights_changes = (
+            -learning_rate
+            * self.weights_gradient
+            / (np.sqrt(self.weights_gradient_squared) + epsilon)
+        )
+
+        self.biases_changes = (
+            -learning_rate
+            * self.biases_gradient
+            / (np.sqrt(self.biases_gradient_squared) + epsilon)
+        )
