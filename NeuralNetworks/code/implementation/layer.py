@@ -159,8 +159,8 @@ class Layer:
         )
 
     def calculate_changes_v2(self, learning_rate):
-        self.weights_changes = learning_rate * self.weights_momentum
-        self.biases_changes = learning_rate * self.biases_momentum
+        self.weights_changes = -learning_rate * self.weights_momentum
+        self.biases_changes = -learning_rate * self.biases_momentum
 
     def calculate_changes_v3(self, learning_rate, epsilon):
         self.weights_changes = (
