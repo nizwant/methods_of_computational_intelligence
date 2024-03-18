@@ -177,7 +177,7 @@ class NeuralNetwork:
         momentum_decay=0.9,
         squared_gradient_decay=0.999,
         max_num_epoch=1000,
-        batch_size=1,
+        batch_size=24,
         batch_fraction=None,
         epsilon=1e-8,
         silent=False,
@@ -202,7 +202,7 @@ class NeuralNetwork:
         for i in range(max_num_epoch):
             N = X.shape[0]
             shuffled_idx = np.random.permutation(N)
-            X, y = X[shuffled_idx], y[shuffled_idx]
+            # X, y = X[shuffled_idx], y[shuffled_idx]
             for idx in range(iterations):
                 X_selected, y_selected = (
                     X[idx * batch_size : (idx + 1) * batch_size],
@@ -235,7 +235,7 @@ class NeuralNetwork:
         learning_rate=0.01,
         momentum_decay=0.9,
         max_num_epoch=1000,
-        batch_size=1,
+        batch_size=24,
         batch_fraction=None,
         silent=False,
     ):
@@ -257,7 +257,7 @@ class NeuralNetwork:
         for i in range(max_num_epoch):
             N = X.shape[0]
             shuffled_idx = np.random.permutation(N)
-            X, y = X[shuffled_idx], y[shuffled_idx]
+            # X, y = X[shuffled_idx], y[shuffled_idx]
             for idx in range(iterations):
                 X_selected, y_selected = (
                     X[idx * batch_size : (idx + 1) * batch_size],
@@ -280,7 +280,7 @@ class NeuralNetwork:
         learning_rate=0.01,
         squared_gradient_decay=0.999,
         max_num_epoch=1000,
-        batch_size=1,
+        batch_size=24,
         batch_fraction=None,
         epsilon=1e-8,
         silent=False,
@@ -304,7 +304,7 @@ class NeuralNetwork:
         for i in range(max_num_epoch):
             N = X.shape[0]
             shuffled_idx = np.random.permutation(N)
-            X, y = X[shuffled_idx], y[shuffled_idx]
+            # X, y = X[shuffled_idx], y[shuffled_idx]
             for idx in range(iterations):
                 X_selected, y_selected = (
                     X[idx * batch_size : (idx + 1) * batch_size],
@@ -327,7 +327,7 @@ class NeuralNetwork:
         y,
         learning_rate=0.01,
         max_num_epoch=1000,
-        batch_size=1,
+        batch_size=24,
         batch_fraction=None,
         silent=False,
     ):
@@ -349,7 +349,7 @@ class NeuralNetwork:
         for i in range(max_num_epoch):
             N = X.shape[0]
             shuffled_idx = np.random.permutation(N)
-            X, y = X[shuffled_idx], y[shuffled_idx]
+            # X, y = X[shuffled_idx], y[shuffled_idx]
             for idx in range(iterations):
                 X_selected, y_selected = (
                     X[idx * batch_size : (idx + 1) * batch_size],
