@@ -148,7 +148,7 @@ class NeuralNetwork:
     def calculate_gradient_numerically(self, x: np.ndarray, y: np.ndarray, h=1e-5):
         """
         THIS FUNCTION IS ONLY FOR EXPERIMENTAL PURPOSES
-        It calculates the gradient numerically and compares it with the gradient calculated by backpropagation
+        It calculates the gradient numerically.
         It is to slow to be used in practice
         """
         initial_cost = self.cost_function.cost(self.forward(x), y)
