@@ -145,6 +145,8 @@ class NeuralNetwork:
     def flatted_gradient(self):
         gradients = []
         for layer in self.layers:
+            print(layer.weights_gradient)
+            print(layer.biases_gradient)
             gradients.append(layer.weights_gradient.flatten())
             gradients.append(layer.biases_gradient.flatten())
         return np.concatenate(gradients)
@@ -170,28 +172,31 @@ class NeuralNetwork:
                     layer.biases[i, j] += h
                     new_cost = self.cost_function.cost(self.predict(x), y)
                     layer.biases[i, j] -= h
-
                     layer.biases_gradient[i, j] = (new_cost - initial_cost) / h
 
-    # def backpropagation(self, x: np.ndarray, y: np.ndarray):
-    #     a = self.forward(x)
-    #     delta = (
-    #         self.cost_function.cost_derivative(a, y)
-    #         * self.layers[-1].activation.derivative(self.layers[-1].z).T
-    #     )
-    #     for previous_layer, layer in zip(self.layers[-2::-1], self.layers[::-1]):
-    #         layer.biases_gradient = np.mean(delta, axis=1)
-    #         layer.weights_gradient = np.dot(delta, previous_layer.a) / x.shape[0]
-    #         delta = np.dot(delta.T, layer.weights.T) * layer.activation.derivative(
-    #             layer.z
-    #         )
+    def backpropagation(self, x: np.ndarray, y: np.ndarray):
+        a = self._forward(x)
+        y = y.T
+        delta = self.cost_function.cost_derivative(a, y) * self.layers[
+            -1
+        ].activation.derivative(self.layers[-1].z)
+        self.layers[-1].biases_gradient = np.mean(delta, axis=1, keepdims=True)
+        self.layers[-1].weights_gradient = (
+            np.dot(delta, self.layers[-2].a.T) / x.shape[0]
+        )
+        for layer, next_layer in zip(self.layers[-2::-1], self.layers[::-1]):
+            delta = np.dot(next_layer.weights.T, delta) * layer.activation.derivative(
+                layer.z
+            )
+            layer.biases_gradient = np.mean(delta, axis=1, keepdims=True)
+            layer.weights_gradient = np.dot(delta, layer.a.T) / x.shape[0]
 
-    # def calculate_and_extract_gradient(
-    #     self, x: np.ndarray, y: np.ndarray, current_solution: np.ndarray
-    # ):
-    #     self.deflatten_weights_and_biases(current_solution)
-    #     self.calculate_gradient_numerically(x, y)
-    #     return self.flatted_gradient()
+    def calculate_and_extract_gradient(
+        self, x: np.ndarray, y: np.ndarray, current_solution: np.ndarray
+    ):
+        self.deflatten_weights_and_biases(current_solution)
+        self.calculate_gradient_numerically(x, y)
+        return self.flatted_gradient()
 
     # def train(
     #     self,
@@ -220,55 +225,61 @@ class NeuralNetwork:
 
 def main():
 
-    # nn = NeuralNetwork()
-    # np.random.seed(0)
-    # nn.add_layer(
-    #     Layer(
-    #         1,
-    #         2,
-    #         activation="sigmoid",
-    #         weight_initialization="normal",
-    #         bias_initialization="normal",
-    #     )
-    # )
-    # nn.add_layer(
-    #     Layer(
-    #         2,
-    #         1,
-    #         activation="linear",
-    #         weight_initialization="normal",
-    #         bias_initialization="normal",
-    #     )
-    # )
-    # # nn.backpropagation(np.array([[2], [1], [3]]), np.array([[1], [2], [4]]))
-    # nn.forward(np.array([[2], [1], [3]]))
-    # print(nn.flatted_gradient())
     nn = NeuralNetwork()
+    np.random.seed(0)
     nn.add_layer(
         Layer(
             1,
-            3,
-        )
-    )
-    nn.add_layer(
-        Layer(
-            3,
-            3,
-        )
-    )
-    nn.add_layer(
-        Layer(
-            3,
             2,
+            activation="sigmoid",
+            weight_initialization="normal",
+            bias_initialization="normal",
         )
     )
-    print(nn._forward(np.array([[2], [1], [3]])))
-    nn.visualize_network()
-    print(nn.flatten_weights_and_biases())
-    nn.calculate_gradient_numerically(
-        np.array([[2], [1], [3]]), np.array([[1, 1], [2, 2], [4, 5]])
+    nn.add_layer(
+        Layer(
+            2,
+            1,
+            activation="linear",
+            weight_initialization="normal",
+            bias_initialization="normal",
+        )
     )
     print(nn.flatted_gradient())
+    nn.backpropagation(np.array([[2], [1], [3]]), np.array([[1], [2], [4]]))
+    print("")
+    print(nn.flatted_gradient())
+    print("")
+    nn.calculate_gradient_numerically(
+        np.array([[2], [1], [3]]), np.array([[1], [2], [4]]), h=1e-6
+    )
+    print(nn.flatted_gradient())
+    # nn = NeuralNetwork()
+    # nn.add_layer(
+    #     Layer(
+    #         1,
+    #         3,
+    #     )
+    # )
+    # nn.add_layer(
+    #     Layer(
+    #         3,
+    #         3,
+    #     )
+    # )
+    # nn.add_layer(
+    #     Layer(
+    #         3,
+    #         2,
+    #     )
+    # )
+    # print(nn._forward(np.array([[2], [1], [3]])))
+    # nn.visualize_network()
+    # print(nn.flatten_weights_and_biases())
+    # nn.calculate_gradient_numerically(
+    #     np.array([[2], [1], [3]]), np.array([[1, 1], [2, 2], [4, 5]])
+    # )
+    # print(nn.flatted_gradient())
 
 
 if __name__ == "__main__":
