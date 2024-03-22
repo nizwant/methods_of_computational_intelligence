@@ -263,14 +263,14 @@ def main():
     )
 
     df = pd.read_csv(
-        "https://raw.githubusercontent.com/nizwant/miowid/main/data/regression/square-simple-test.csv"
+        "https://raw.githubusercontent.com/nizwant/miowid/main/data/regression/steps-large-training.csv"
     )
 
     mean = df.mean()
     std = df.std()
     df = (df - mean) / std
-    nn.train(df["x"], df["y"])
-    # mse = nn.cost_function.cost(nn.predict(df["x"]), df["y"])
+    nn.train(df["x"], df["y"], batch_size=50, max_num_epoch=100)
+    mse = nn.cost_function.cost(nn.predict(df["x"]), df["y"])
     # print(f"Mean Squared Error: {mse * std['y']**2}")
     y = []
     for i in df["x"]:

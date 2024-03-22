@@ -389,7 +389,7 @@ class adam(Optimizer):
         squared_gradients = np.zeros_like(initial_solution)
         counter = 0
 
-        for _ in range(max_num_epoch):
+        for i in range(max_num_epoch):
             N = X.shape[0]
             shuffled_idx = np.random.permutation(N)
             # X, y = X[shuffled_idx], y[shuffled_idx]
@@ -422,5 +422,5 @@ class adam(Optimizer):
                     / (np.sqrt(corrected_squared_gradients) + epsilon)
                 )
 
-            # print("Epoch:", current_solution)
+            print("Epoch:", i)
         return current_solution
