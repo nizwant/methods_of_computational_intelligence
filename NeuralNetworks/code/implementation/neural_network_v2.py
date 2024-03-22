@@ -24,7 +24,7 @@ class NeuralNetwork:
         self.layer_sizes.append(layer.nodes_out)
 
     def _forward(self, x: np.ndarray):
-        if x is pd.DataFrame:
+        if isinstance(x, pd.DataFrame) or isinstance(x, pd.Series):
             x = x.to_numpy()
         a = x.T
         for layer in self.layers:
@@ -145,9 +145,6 @@ class NeuralNetwork:
     def flatted_gradient(self):
         gradients = []
         for layer in self.layers:
-            print("weight", layer.weights_gradient.shape)
-            print("bias", layer.biases_gradient.shape)
-            print()
             gradients.append(layer.weights_gradient.flatten())
             gradients.append(layer.biases_gradient.flatten())
         return np.concatenate(gradients)
@@ -185,19 +182,20 @@ class NeuralNetwork:
         self.layers[-1].weights_gradient = (
             np.dot(delta, self.layers[-2].a.T) / x.shape[0]
         )
-        for layer, next_layer in zip(self.layers[-2::-1], self.layers[::-1]):
+        for previous_layer, layer, next_layer in zip(
+            self.layers[-3::-1], self.layers[-2::-1], self.layers[::-1]
+        ):
             delta = np.dot(next_layer.weights.T, delta) * layer.activation.derivative(
                 layer.z
             )
             layer.biases_gradient = np.mean(delta, axis=1, keepdims=True)
-            layer.weights_gradient = np.dot(delta, layer.a.T) / x.shape[0]
+            layer.weights_gradient = np.dot(delta, previous_layer.a.T) / x.shape[0]
 
-    def calculate_and_extract_gradient(
-        self, x: np.ndarray, y: np.ndarray, current_solution: np.ndarray
-    ):
-        self.deflatten_weights_and_biases(current_solution)
-        self.calculate_gradient_numerically(x, y)
-        return self.flatted_gradient()
+        delta = np.dot(self.layers[1].weights.T, delta) * self.layers[
+            0
+        ].activation.derivative(self.layers[0].z)
+        self.layers[0].biases_gradient = np.mean(delta, axis=1, keepdims=True)
+        self.layers[0].weights_gradient = np.dot(delta, x) / x.shape[0]
 
     # def train(
     #     self,
@@ -227,23 +225,18 @@ class NeuralNetwork:
 def main():
 
     nn = NeuralNetwork()
-    np.random.seed(0)
     nn.add_layer(
         Layer(
             1,
-            5,
+            10,
             activation="sigmoid",
-            weight_initialization="normal",
-            bias_initialization="normal",
         )
     )
     nn.add_layer(
         Layer(
-            5,
+            10,
             5,
             activation="sigmoid",
-            weight_initialization="normal",
-            bias_initialization="normal",
         )
     )
     nn.add_layer(
@@ -251,23 +244,37 @@ def main():
             5,
             1,
             activation="linear",
-            weight_initialization="normal",
-            bias_initialization="normal",
         )
     )
 
     df = pd.read_csv(
-        "https://raw.githubusercontent.com/nizwant/miowid/main/data/regression/square-small-test.csv"
+        "https://raw.githubusercontent.com/nizwant/miowid/main/data/regression/square-simple-test.csv"
     )
 
-    nn.backpropagation(df[["x"]].to_numpy(), df[["y"]].to_numpy())
-    # print(nn.flatted_gradient())
-    # print("")
-    # nn.calculate_gradient_numerically(
-    #     df[["x"]].to_numpy(), df[["y"]].to_numpy(), h=1e-6
-    # )
-    print(nn.flatted_gradient())
-    nn.visualize_network()
+    mean = df.mean()
+    std = df.std()
+    df = (df - mean) / std
+    mse = []
+    current_solution = nn.flatten_weights_and_biases()
+    momentum = np.zeros_like(current_solution)
+    for i in range(20):
+        nn.backpropagation(df[["x"]].to_numpy(), df[["y"]].to_numpy())
+        current_solution = nn.flatten_weights_and_biases()
+        momentum = 0.9 * momentum + nn.flatted_gradient()
+        nn.deflatten_weights_and_biases(current_solution - 0.5 * momentum)
+        mse.append(
+            np.mean((nn.predict(df[["x"]].to_numpy()) - df[["y"]].to_numpy()) ** 2)
+        )
+    plt.plot(mse[-1000:])
+    plt.show()
+    y = []
+    for i in df["x"]:
+        y.append(nn._forward(np.array(i)))
+    plt.scatter(df["x"], y, c="red")
+    plt.scatter(df["x"], df["y"], c="blue")
+    plt.legend(["Prediction", "True"])
+    plt.show()
+    print(mse[-1] * std["y"] ** 2)
 
 
 if __name__ == "__main__":
