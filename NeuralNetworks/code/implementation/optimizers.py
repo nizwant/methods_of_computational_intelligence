@@ -51,8 +51,8 @@ class mini_batch_gradient_descent(Optimizer):
     def optimize(
         X,
         y,
-        initial_solution,
-        calculate_gradient,
+        neural_network,
+        using_backpropagation,
         learning_rate=0.01,
         max_num_epoch=1000,
         batch_size=30,
@@ -65,8 +65,8 @@ class mini_batch_gradient_descent(Optimizer):
         Parameters:
         - X: Input data.
         - y: Target labels.
-        - initial_solution: Initial solution for optimization.
-        - calculate_gradient: Function to calculate the gradient.
+        - neural_network: Neural network object.
+        - using_backpropagation: Whether to use backpropagation to calculate the gradient.
         - learning_rate: Learning rate for updating the solution (default: 0.01).
         - max_num_iters: Maximum number of iterations (default: 1000).
         - batch_size: Size of the mini batch (default: 1).
@@ -81,7 +81,7 @@ class mini_batch_gradient_descent(Optimizer):
             batch_size, batch_fraction, X
         )
 
-        current_solution = initial_solution
+        current_solution = neural_network.flatten_weights_and_biases()
 
         for i in range(max_num_epoch):
             N = X.shape[0]
@@ -92,7 +92,9 @@ class mini_batch_gradient_descent(Optimizer):
                     X[idx * batch_size : (idx + 1) * batch_size],
                     y[idx * batch_size : (idx + 1) * batch_size],
                 )
-                gradient = calculate_gradient(X_selected, y_selected, current_solution)
+                gradient = neural_network.calculate_and_extract_gradient(
+                    X_selected, y_selected, current_solution, using_backpropagation
+                )
                 current_solution = current_solution - learning_rate * gradient
             mse_on_train = 0
             if not silent:
@@ -106,8 +108,8 @@ class stochastic_gradient_descent(Optimizer):
     def optimize(
         X,
         y,
-        initial_solution,
-        calculate_gradient,
+        neural_network,
+        using_backpropagation,
         learning_rate=0.01,
         max_num_epoch=1000,
     ):
@@ -117,8 +119,8 @@ class stochastic_gradient_descent(Optimizer):
         Parameters:
         - X: Input data.
         - y: Target labels.
-        - initial_solution: Initial solution for optimization.
-        - calculate_gradient: Function to calculate the gradient.
+        - neural_network: Neural network object.
+        - using_backpropagation: Whether to use backpropagation to calculate the gradient.
         - learning_rate: Learning rate for updating the solution (default: 0.01).
         - max_num_iters: Maximum number of iterations (default: 1000).
 
@@ -128,8 +130,8 @@ class stochastic_gradient_descent(Optimizer):
         return mini_batch_gradient_descent().optimize(
             X,
             y,
-            initial_solution,
-            calculate_gradient,
+            neural_network,
+            using_backpropagation,
             learning_rate,
             max_num_epoch,
             batch_size=1,
@@ -141,8 +143,8 @@ class full_batch_gradient_descent(Optimizer):
     def optimize(
         X,
         y,
-        initial_solution,
-        calculate_gradient,
+        neural_network,
+        using_backpropagation,
         learning_rate=0.01,
         max_num_epoch=1000,
     ):
@@ -152,8 +154,8 @@ class full_batch_gradient_descent(Optimizer):
         Parameters:
         - X: Input data.
         - y: Target labels.
-        - initial_solution: Initial solution for optimization.
-        - calculate_gradient: Function to calculate the gradient.
+        - neural_network: Neural network object.
+        - using_backpropagation: Whether to use backpropagation to calculate the gradient.
         - learning_rate: Learning rate for updating the solution (default: 0.01).
         - max_num_iters: Maximum number of iterations (default: 1000).
 
@@ -163,8 +165,8 @@ class full_batch_gradient_descent(Optimizer):
         return mini_batch_gradient_descent().optimize(
             X,
             y,
-            initial_solution,
-            calculate_gradient,
+            neural_network,
+            using_backpropagation,
             learning_rate,
             max_num_epoch,
             batch_fraction=1,
@@ -176,8 +178,8 @@ class mini_batch_gradient_descent_with_momentum(Optimizer):
     def optimize(
         X,
         y,
-        initial_solution,
-        calculate_gradient,
+        neural_network,
+        using_backpropagation,
         learning_rate=0.01,
         momentum_decay=0.9,
         max_num_epoch=1000,
@@ -191,8 +193,8 @@ class mini_batch_gradient_descent_with_momentum(Optimizer):
         Parameters:
         - X: Input data.
         - y: Target labels.
-        - initial_solution: Initial solution for optimization.
-        - calculate_gradient: Function to calculate the gradient.
+        - neural_network: Neural network object.
+        - using_backpropagation: Whether to use backpropagation to calculate the gradient.
         - learning_rate: Learning rate for updating the solution (default: 0.01).
         - momentum_decay: Decay rate for the momentum (default: 0.9).
         - max_num_iters: Maximum number of iterations (default: 1000).
@@ -208,8 +210,8 @@ class mini_batch_gradient_descent_with_momentum(Optimizer):
             batch_size, batch_fraction, X
         )
 
-        current_solution = initial_solution
-        momentum = np.zeros_like(initial_solution)
+        current_solution = neural_network.flatten_weights_and_biases()
+        momentum = np.zeros_like(current_solution)
 
         for i in range(max_num_epoch):
             N = X.shape[0]
@@ -220,7 +222,9 @@ class mini_batch_gradient_descent_with_momentum(Optimizer):
                     X[idx * batch_size : (idx + 1) * batch_size],
                     y[idx * batch_size : (idx + 1) * batch_size],
                 )
-                gradient = calculate_gradient(X_selected, y_selected, current_solution)
+                gradient = neural_network.calculate_and_extract_gradient(
+                    X_selected, y_selected, current_solution, using_backpropagation
+                )
                 momentum = momentum_decay * momentum - learning_rate * gradient
                 current_solution = current_solution + momentum
             mse_on_train = 0
@@ -235,8 +239,8 @@ class adagrad(Optimizer):
     def optimize(
         X,
         y,
-        initial_solution,
-        calculate_gradient,
+        neural_network,
+        using_backpropagation,
         learning_rate=0.01,
         max_num_epoch=1000,
         batch_size=30,
@@ -250,8 +254,8 @@ class adagrad(Optimizer):
         Parameters:
         - X: Input data.
         - y: Target labels.
-        - initial_solution: Initial solution for optimization.
-        - calculate_gradient: Function to calculate the gradient.
+        - neural_network: Neural network object.
+        - using_backpropagation: Whether to use backpropagation to calculate the gradient.
         - learning_rate: Learning rate for updating the solution (default: 0.01).
         - max_num_iters: Maximum number of iterations (default: 1000).
         - batch_size: Size of the mini batch (default: 1).
@@ -267,8 +271,8 @@ class adagrad(Optimizer):
             batch_size, batch_fraction, X
         )
 
-        current_solution = initial_solution
-        squared_gradients = np.zeros_like(initial_solution)
+        current_solution = neural_network.flatten_weights_and_biases()
+        squared_gradients = np.zeros_like(current_solution)
 
         for i in range(max_num_epoch):
             N = X.shape[0]
@@ -279,7 +283,9 @@ class adagrad(Optimizer):
                     X[idx * batch_size : (idx + 1) * batch_size],
                     y[idx * batch_size : (idx + 1) * batch_size],
                 )
-                gradient = calculate_gradient(X_selected, y_selected, current_solution)
+                gradient = neural_network.calculate_and_extract_gradient(
+                    X_selected, y_selected, current_solution, using_backpropagation
+                )
                 squared_gradients += gradient**2
                 current_solution = current_solution - learning_rate * gradient / (
                     np.sqrt(squared_gradients) + epsilon
@@ -295,8 +301,8 @@ class rmsprop(Optimizer):
     def optimize(
         X,
         y,
-        initial_solution,
-        calculate_gradient,
+        neural_network,
+        using_backpropagation,
         learning_rate=0.01,
         squared_gradient_decay=0.99,
         max_num_epoch=1000,
@@ -311,8 +317,8 @@ class rmsprop(Optimizer):
         Parameters:
         - X: Input data.
         - y: Target labels.
-        - initial_solution: Initial solution for optimization.
-        - calculate_gradient: Function to calculate the gradient.
+        - neural_network: Neural network object.
+        - using_backpropagation: Whether to use backpropagation to calculate the gradient.
         - learning_rate: Learning rate for updating the solution (default: 0.01).
         - squared_gradient_decay: Decay rate for the squared gradient (default: 0.99).
         - max_num_iters: Maximum number of iterations (default: 1000).
@@ -329,8 +335,8 @@ class rmsprop(Optimizer):
             batch_size, batch_fraction, X
         )
 
-        current_solution = initial_solution
-        squared_gradients = np.zeros_like(initial_solution)
+        current_solution = neural_network.flatten_weights_and_biases()
+        squared_gradients = np.zeros_like(current_solution)
 
         for i in range(max_num_epoch):
             N = X.shape[0]
@@ -341,7 +347,9 @@ class rmsprop(Optimizer):
                     X[idx * batch_size : (idx + 1) * batch_size],
                     y[idx * batch_size : (idx + 1) * batch_size],
                 )
-                gradient = calculate_gradient(X_selected, y_selected, current_solution)
+                gradient = neural_network.calculate_and_extract_gradient(
+                    X_selected, y_selected, current_solution, using_backpropagation
+                )
                 squared_gradients = (
                     squared_gradient_decay * squared_gradients
                     + (1 - squared_gradient_decay) * gradient**2
@@ -360,7 +368,6 @@ class adam(Optimizer):
     def optimize(
         X,
         y,
-        initial_solution,
         neural_network,
         using_backpropagation,
         learning_rate=0.01,
@@ -378,7 +385,6 @@ class adam(Optimizer):
         Parameters:
         - X: Input data.
         - y: Target labels.
-        - initial_solution: Initial solution for optimization.
         - neural_network: Neural network object.
         - using_backpropagation: Whether to use backpropagation to calculate the gradient.
         - learning_rate: Learning rate for updating the solution (default: 0.01).
@@ -390,8 +396,7 @@ class adam(Optimizer):
         - epsilon: Small value to avoid division by zero (default: 1e-8).
 
         Returns:
-        - The optimized solution.
-        -
+        - List of mse after each epoch
         """
 
         X, y = Optimizer.transfer_data_to_numpy(X, y)
@@ -399,9 +404,9 @@ class adam(Optimizer):
             batch_size, batch_fraction, X
         )
 
-        current_solution = initial_solution
-        momentum = np.zeros_like(initial_solution)
-        squared_gradients = np.zeros_like(initial_solution)
+        current_solution = neural_network.flatten_weights_and_biases()
+        momentum = np.zeros_like(current_solution)
+        squared_gradients = np.zeros_like(current_solution)
         counter = 0
         mse_after_epoch = []
 

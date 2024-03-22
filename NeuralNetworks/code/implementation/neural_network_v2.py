@@ -219,21 +219,20 @@ class NeuralNetwork:
         y,
         learning_rate=0.01,
         max_num_epoch=1000,
-        batch_size=10,
+        batch_size=30,
         batch_fraction=None,
         using_backpropagation=True,
+        silent=True,
     ):
-        initial_solution = self.flatten_weights_and_biases()
-        solution = self.optimizer(
+        mse_after_epoch = self.optimizer(
             X=X,
             y=y,
-            initial_solution=initial_solution,
             using_backpropagation=using_backpropagation,
             learning_rate=learning_rate,
             max_num_epoch=max_num_epoch,
             batch_size=batch_size,
             batch_fraction=batch_fraction,
             neural_network=self,
+            silent=silent,
         )
-        self.deflatten_weights_and_biases(solution)
-        return solution
+        return mse_after_epoch
