@@ -113,9 +113,12 @@ class stochastic_gradient_descent(Optimizer):
         X,
         y,
         neural_network,
+        batch_size,
+        batch_fraction,
         using_backpropagation,
         learning_rate=0.01,
         max_num_epoch=1000,
+        silent=True,
     ):
         """
         Performs stochastic gradient descent optimization.
@@ -139,6 +142,7 @@ class stochastic_gradient_descent(Optimizer):
             learning_rate,
             max_num_epoch,
             batch_size=1,
+            silent=silent,
         )
 
 
@@ -149,8 +153,11 @@ class full_batch_gradient_descent(Optimizer):
         y,
         neural_network,
         using_backpropagation,
+        batch_size,
+        batch_fraction,
         learning_rate=0.01,
         max_num_epoch=1000,
+        silent=True,
     ):
         """
         Performs full batch gradient descent optimization.
@@ -174,6 +181,7 @@ class full_batch_gradient_descent(Optimizer):
             learning_rate,
             max_num_epoch,
             batch_fraction=1,
+            silent=silent,
         )
 
 
