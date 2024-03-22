@@ -23,13 +23,16 @@ class NeuralNetwork:
             self.layer_sizes = [layer.nodes_in]
         self.layer_sizes.append(layer.nodes_out)
 
-    def forward(self, x: np.ndarray):
+    def _forward(self, x: np.ndarray):
         if x is pd.DataFrame:
             x = x.to_numpy()
-        a = x
+        a = x.T
         for layer in self.layers:
             a = layer.forward(a)
         return a
+
+    def predict(self, x: np.ndarray):
+        return self._forward(x).T
 
     def visualize_network(self):
         """
@@ -48,7 +51,7 @@ class NeuralNetwork:
                 if layer_number == 0:
                     biases[counter] = 0
                 else:
-                    biases[counter] = self.layers[layer_number - 1].biases[0, j]
+                    biases[counter] = self.layers[layer_number - 1].biases[j, 0]
                 mapping[counter] = f"({layer_number}, {j})"
                 counter += 1
         nx.set_node_attributes(G, biases, "bias")
@@ -58,7 +61,7 @@ class NeuralNetwork:
         for layer_number, layer_size in enumerate(self.layer_sizes[:-1]):
             for j in range(layer_size):
                 for k in range(self.layer_sizes[layer_number + 1]):
-                    weight = self.layers[layer_number].weights[j, k]
+                    weight = self.layers[layer_number].weights[k, j]
                     color = "red" if weight < 0 else "green"
                     G.add_edge(
                         f"({layer_number}, {j})",
@@ -78,7 +81,8 @@ class NeuralNetwork:
             node_colors.append(value)
         cmap = LinearSegmentedColormap.from_list("rg", ["r", "w", "g"], N=256)
         max_bias = max(abs(np.array(node_colors)))
-
+        if max_bias == 0:
+            max_bias = 1
         # draw the graph
         pos = nx.multipartite_layout(G)
         plt.figure(figsize=(5, 5))
@@ -151,12 +155,12 @@ class NeuralNetwork:
         It calculates the gradient numerically.
         It is to slow to be used in practice
         """
-        initial_cost = self.cost_function.cost(self.forward(x), y)
+        initial_cost = self.cost_function.cost(self.predict(x), y)
         for layer in self.layers:
             for i in range(layer.weights.shape[0]):
                 for j in range(layer.weights.shape[1]):
                     layer.weights[i, j] += h
-                    new_cost = self.cost_function.cost(self.forward(x), y)
+                    new_cost = self.cost_function.cost(self.predict(x), y)
                     layer.weights[i, j] -= h
 
                     layer.weights_gradient[i, j] = (new_cost - initial_cost) / h
@@ -164,7 +168,7 @@ class NeuralNetwork:
             for i in range(layer.biases.shape[0]):
                 for j in range(layer.biases.shape[1]):
                     layer.biases[i, j] += h
-                    new_cost = self.cost_function.cost(self.forward(x), y)
+                    new_cost = self.cost_function.cost(self.predict(x), y)
                     layer.biases[i, j] -= h
 
                     layer.biases_gradient[i, j] = (new_cost - initial_cost) / h
@@ -216,27 +220,54 @@ class NeuralNetwork:
 
 def main():
 
+    # nn = NeuralNetwork()
+    # np.random.seed(0)
+    # nn.add_layer(
+    #     Layer(
+    #         1,
+    #         2,
+    #         activation="sigmoid",
+    #         weight_initialization="normal",
+    #         bias_initialization="normal",
+    #     )
+    # )
+    # nn.add_layer(
+    #     Layer(
+    #         2,
+    #         1,
+    #         activation="linear",
+    #         weight_initialization="normal",
+    #         bias_initialization="normal",
+    #     )
+    # )
+    # # nn.backpropagation(np.array([[2], [1], [3]]), np.array([[1], [2], [4]]))
+    # nn.forward(np.array([[2], [1], [3]]))
+    # print(nn.flatted_gradient())
     nn = NeuralNetwork()
-    np.random.seed(0)
     nn.add_layer(
         Layer(
             1,
-            2,
-            activation="sigmoid",
-            weight_initialization="normal",
-            bias_initialization="normal",
+            3,
         )
     )
     nn.add_layer(
         Layer(
-            2,
-            1,
-            activation="linear",
-            weight_initialization="normal",
-            bias_initialization="normal",
+            3,
+            3,
         )
     )
-    nn.backpropagation(np.array([[2], [1], [3]]), np.array([[1], [2], [4]]))
+    nn.add_layer(
+        Layer(
+            3,
+            2,
+        )
+    )
+    print(nn._forward(np.array([[2], [1], [3]])))
+    nn.visualize_network()
+    print(nn.flatten_weights_and_biases())
+    nn.calculate_gradient_numerically(
+        np.array([[2], [1], [3]]), np.array([[1, 1], [2, 2], [4, 5]])
+    )
     print(nn.flatted_gradient())
 
 
