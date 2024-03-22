@@ -13,7 +13,7 @@ class Optimizer(ABC):
         calculate_gradient,
         learning_rate=0.01,
         max_num_epoch=1000,
-        batch_size=1,
+        batch_size=30,
         batch_fraction=None,
     ):
         pass
@@ -55,8 +55,9 @@ class mini_batch_gradient_descent(Optimizer):
         calculate_gradient,
         learning_rate=0.01,
         max_num_epoch=1000,
-        batch_size=42,
+        batch_size=30,
         batch_fraction=None,
+        silent=True,
     ):
         """
         Performs mini batch gradient descent optimization.
@@ -82,7 +83,7 @@ class mini_batch_gradient_descent(Optimizer):
 
         current_solution = initial_solution
 
-        for _ in range(max_num_epoch):
+        for i in range(max_num_epoch):
             N = X.shape[0]
             shuffled_idx = np.random.permutation(N)
             X, y = X[shuffled_idx], y[shuffled_idx]
@@ -93,7 +94,9 @@ class mini_batch_gradient_descent(Optimizer):
                 )
                 gradient = calculate_gradient(X_selected, y_selected, current_solution)
                 current_solution = current_solution - learning_rate * gradient
-            print("Epoch:", current_solution)
+            mse_on_train = 0
+            if not silent:
+                print(f"Epoch: {i}, MSE on train: {mse_on_train}")
         return current_solution
 
 
@@ -178,8 +181,9 @@ class mini_batch_gradient_descent_with_momentum(Optimizer):
         learning_rate=0.01,
         momentum_decay=0.9,
         max_num_epoch=1000,
-        batch_size=1,
+        batch_size=30,
         batch_fraction=None,
+        silent=True,
     ):
         """
         Performs mini batch gradient descent with momentum optimization.
@@ -207,7 +211,7 @@ class mini_batch_gradient_descent_with_momentum(Optimizer):
         current_solution = initial_solution
         momentum = np.zeros_like(initial_solution)
 
-        for _ in range(max_num_epoch):
+        for i in range(max_num_epoch):
             N = X.shape[0]
             shuffled_idx = np.random.permutation(N)
             X, y = X[shuffled_idx], y[shuffled_idx]
@@ -219,7 +223,9 @@ class mini_batch_gradient_descent_with_momentum(Optimizer):
                 gradient = calculate_gradient(X_selected, y_selected, current_solution)
                 momentum = momentum_decay * momentum - learning_rate * gradient
                 current_solution = current_solution + momentum
-            print("Epoch:", current_solution)
+            mse_on_train = 0
+            if not silent:
+                print(f"Epoch: {i}, MSE on train: {mse_on_train}")
         return current_solution
 
 
@@ -233,9 +239,10 @@ class adagrad(Optimizer):
         calculate_gradient,
         learning_rate=0.01,
         max_num_epoch=1000,
-        batch_size=1,
+        batch_size=30,
         batch_fraction=None,
         epsilon=1e-8,
+        silent=True,
     ):
         """
         Performs adagrad optimization.
@@ -263,7 +270,7 @@ class adagrad(Optimizer):
         current_solution = initial_solution
         squared_gradients = np.zeros_like(initial_solution)
 
-        for _ in range(max_num_epoch):
+        for i in range(max_num_epoch):
             N = X.shape[0]
             shuffled_idx = np.random.permutation(N)
             X, y = X[shuffled_idx], y[shuffled_idx]
@@ -277,7 +284,9 @@ class adagrad(Optimizer):
                 current_solution = current_solution - learning_rate * gradient / (
                     np.sqrt(squared_gradients) + epsilon
                 )
-            print("Epoch:", current_solution)
+            mse_on_train = 0
+            if not silent:
+                print(f"Epoch: {i}, MSE on train: {mse_on_train}")
         return current_solution
 
 
@@ -291,9 +300,10 @@ class rmsprop(Optimizer):
         learning_rate=0.01,
         squared_gradient_decay=0.99,
         max_num_epoch=1000,
-        batch_size=1,
+        batch_size=30,
         batch_fraction=None,
         epsilon=1e-8,
+        silent=True,
     ):
         """
         Performs RMSProp optimization.
@@ -322,7 +332,7 @@ class rmsprop(Optimizer):
         current_solution = initial_solution
         squared_gradients = np.zeros_like(initial_solution)
 
-        for _ in range(max_num_epoch):
+        for i in range(max_num_epoch):
             N = X.shape[0]
             shuffled_idx = np.random.permutation(N)
             X, y = X[shuffled_idx], y[shuffled_idx]
@@ -339,7 +349,9 @@ class rmsprop(Optimizer):
                 current_solution = current_solution - learning_rate * gradient / (
                     np.sqrt(squared_gradients) + epsilon
                 )
-            print("Epoch:", current_solution)
+            mse_on_train = 0
+            if not silent:
+                print(f"Epoch: {i}, MSE on train: {mse_on_train}")
         return current_solution
 
 
@@ -355,9 +367,10 @@ class adam(Optimizer):
         momentum_decay=0.9,
         squared_gradient_decay=0.99,
         max_num_epoch=1000,
-        batch_size=10,
+        batch_size=30,
         batch_fraction=None,
         epsilon=1e-8,
+        silent=True,
     ):
         """
         Performs optimization with adam algorithm.
@@ -366,7 +379,8 @@ class adam(Optimizer):
         - X: Input data.
         - y: Target labels.
         - initial_solution: Initial solution for optimization.
-        - calculate_gradient: Function to calculate the gradient.
+        - neural_network: Neural network object.
+        - using_backpropagation: Whether to use backpropagation to calculate the gradient.
         - learning_rate: Learning rate for updating the solution (default: 0.01).
         - momentum_decay: Decay rate for the momentum (default: 0.9).
         - squared_gradient_decay: Decay rate for the squared gradient (default: 0.99).
@@ -377,6 +391,7 @@ class adam(Optimizer):
 
         Returns:
         - The optimized solution.
+        -
         """
 
         X, y = Optimizer.transfer_data_to_numpy(X, y)
@@ -388,11 +403,12 @@ class adam(Optimizer):
         momentum = np.zeros_like(initial_solution)
         squared_gradients = np.zeros_like(initial_solution)
         counter = 0
+        mse_after_epoch = []
 
         for i in range(max_num_epoch):
             N = X.shape[0]
             shuffled_idx = np.random.permutation(N)
-            # X, y = X[shuffled_idx], y[shuffled_idx]
+            X, y = X[shuffled_idx], y[shuffled_idx]
             for idx in range(iterations):
                 X_selected, y_selected = (
                     X[idx * batch_size : (idx + 1) * batch_size],
@@ -421,6 +437,10 @@ class adam(Optimizer):
                     * corrected_momentum
                     / (np.sqrt(corrected_squared_gradients) + epsilon)
                 )
-
-            print("Epoch:", i)
-        return current_solution
+            # mse_on_train = neural_network.cost_function.cost(X, y)
+            # mse_after_epoch.append(mse_on_train)
+            mse_on_train = 0
+            if not silent:
+                print(f"Epoch: {i}, MSE on train: {mse_on_train}")
+        neural_network.deflatten_weights_and_biases(current_solution)
+        return mse_after_epoch
