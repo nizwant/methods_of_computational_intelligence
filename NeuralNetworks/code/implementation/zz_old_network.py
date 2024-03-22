@@ -3,7 +3,7 @@ import pandas as pd
 import matplotlib.pyplot as plt
 import networkx as nx
 from matplotlib.colors import LinearSegmentedColormap
-from layer import Layer
+from NeuralNetworks.code.implementation.zz_old_layer import Layer
 
 
 class NeuralNetwork:
@@ -449,26 +449,3 @@ class NeuralNetwork:
             markersize=10,
         )
         plt.legend(handles=[red_patch, green_patch])
-
-
-def main():
-    nn = NeuralNetwork([10, 5], 1, 1)
-    df = pd.read_csv(
-        "https://raw.githubusercontent.com/nizwant/miowid/main/data/regression/steps-large-training.csv"
-    )
-
-    mean = df.mean()
-    std = df.std()
-    df = (df - mean) / std
-
-    nn.adam(
-        df["x"],
-        df["y"],
-        learning_rate=0.01,
-        batch_size=50,
-        silent=False,
-    )
-
-
-if __name__ == "__main__":
-    main()
