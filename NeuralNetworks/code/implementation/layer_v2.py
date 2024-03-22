@@ -29,24 +29,24 @@ class Layer:
         self.nodes_out = nodes_out
 
         self.weights = InitializationBuilder.get_initialization(
-            weight_initialization, nodes_in, nodes_out
+            weight_initialization, nodes_out, nodes_in
         )
 
         self.weights_gradient = InitializationBuilder.get_initialization(
-            "zero", nodes_in, nodes_out
+            "zero", nodes_out, nodes_in
         )
 
         self.biases = InitializationBuilder.get_initialization(
-            bias_initialization, 1, nodes_out
+            bias_initialization, nodes_out, 1
         )
         self.biases_gradient = InitializationBuilder.get_initialization(
-            "zero", 1, nodes_out
+            "zero", nodes_out, 1
         )
 
         self.activation = ActivationBuilder.get_activation(activation)
 
     def forward(self, a):
-        self.z = np.dot(a, self.weights) + self.biases
+        self.z = np.dot(self.weights, a) + self.biases
         self.a = self.activation.activation(self.z)
         return self.a
 
