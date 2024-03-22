@@ -197,29 +197,44 @@ class NeuralNetwork:
         self.layers[0].biases_gradient = np.mean(delta, axis=1, keepdims=True)
         self.layers[0].weights_gradient = np.dot(delta, x) / x.shape[0]
 
-    # def train(
-    #     self,
-    #     X,
-    #     y,
-    #     learning_rate=0.01,
-    #     max_num_epoch=1000,
-    #     batch_size=1,
-    #     batch_fraction=None,
-    #     calculate_gradient_method=backpropagation,
-    # ):
-    #     initial_solution = self.flatten_weights_and_biases()
-    #     solution = self.optimizer(
-    #         X=X,
-    #         y=y,
-    #         initial_solution=initial_solution,
-    #         calculate_gradient=self.calculate_and_extract_gradient,
-    #         learning_rate=learning_rate,
-    #         max_num_epoch=max_num_epoch,
-    #         batch_size=batch_size,
-    #         batch_fraction=batch_fraction,
-    #     )
-    #     self.deflatten_weights_and_biases(solution)
-    #     return solution
+    def calculate_and_extract_gradient(
+        self,
+        x: np.ndarray,
+        y: np.ndarray,
+        current_solution: np.ndarray,
+        use_backpropagation=True,
+    ):
+        self.deflatten_weights_and_biases(current_solution)
+        if use_backpropagation:
+            self.backpropagation(x, y)
+        else:
+            self.calculate_gradient_numerically(x, y)
+        return self.flatted_gradient()
+
+    def train(
+        self,
+        X,
+        y,
+        learning_rate=0.01,
+        max_num_epoch=1000,
+        batch_size=10,
+        batch_fraction=None,
+        using_backpropagation=True,
+    ):
+        initial_solution = self.flatten_weights_and_biases()
+        solution = self.optimizer(
+            X=X,
+            y=y,
+            initial_solution=initial_solution,
+            using_backpropagation=using_backpropagation,
+            learning_rate=learning_rate,
+            max_num_epoch=max_num_epoch,
+            batch_size=batch_size,
+            batch_fraction=batch_fraction,
+            neural_network=self,
+        )
+        self.deflatten_weights_and_biases(solution)
+        return solution
 
 
 def main():
@@ -254,19 +269,9 @@ def main():
     mean = df.mean()
     std = df.std()
     df = (df - mean) / std
-    mse = []
-    current_solution = nn.flatten_weights_and_biases()
-    momentum = np.zeros_like(current_solution)
-    for i in range(20):
-        nn.backpropagation(df[["x"]].to_numpy(), df[["y"]].to_numpy())
-        current_solution = nn.flatten_weights_and_biases()
-        momentum = 0.9 * momentum + nn.flatted_gradient()
-        nn.deflatten_weights_and_biases(current_solution - 0.5 * momentum)
-        mse.append(
-            np.mean((nn.predict(df[["x"]].to_numpy()) - df[["y"]].to_numpy()) ** 2)
-        )
-    plt.plot(mse[-1000:])
-    plt.show()
+    nn.train(df["x"], df["y"])
+    # mse = nn.cost_function.cost(nn.predict(df["x"]), df["y"])
+    # print(f"Mean Squared Error: {mse * std['y']**2}")
     y = []
     for i in df["x"]:
         y.append(nn._forward(np.array(i)))
@@ -274,7 +279,6 @@ def main():
     plt.scatter(df["x"], df["y"], c="blue")
     plt.legend(["Prediction", "True"])
     plt.show()
-    print(mse[-1] * std["y"] ** 2)
 
 
 if __name__ == "__main__":

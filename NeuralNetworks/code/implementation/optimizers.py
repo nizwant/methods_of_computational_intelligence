@@ -20,10 +20,14 @@ class Optimizer(ABC):
 
     @staticmethod
     def transfer_data_to_numpy(X, y):
-        if type(X) is pd.DataFrame:
+        if isinstance(X, pd.DataFrame) or isinstance(X, pd.Series):
             X = X.to_numpy()
-        if type(y) is pd.DataFrame:
-            y = y.to_numpy().T
+            if len(X.shape) == 1:
+                X = X.reshape(-1, 1)
+        if isinstance(y, pd.DataFrame) or isinstance(y, pd.Series):
+            y = y.to_numpy()
+            if len(y.shape) == 1:
+                y = y.reshape(-1, 1)
         return X, y
 
     @staticmethod
@@ -345,12 +349,13 @@ class adam(Optimizer):
         X,
         y,
         initial_solution,
-        calculate_gradient,
+        neural_network,
+        using_backpropagation,
         learning_rate=0.01,
         momentum_decay=0.9,
         squared_gradient_decay=0.99,
         max_num_epoch=1000,
-        batch_size=1,
+        batch_size=10,
         batch_fraction=None,
         epsilon=1e-8,
     ):
@@ -393,7 +398,10 @@ class adam(Optimizer):
                     X[idx * batch_size : (idx + 1) * batch_size],
                     y[idx * batch_size : (idx + 1) * batch_size],
                 )
-                gradient = calculate_gradient(X_selected, y_selected, current_solution)
+
+                gradient = neural_network.calculate_and_extract_gradient(
+                    X_selected, y_selected, current_solution, using_backpropagation
+                )
                 momentum = momentum_decay * momentum + (1 - momentum_decay) * gradient
                 squared_gradients = (
                     squared_gradient_decay * squared_gradients
@@ -414,5 +422,5 @@ class adam(Optimizer):
                     / (np.sqrt(corrected_squared_gradients) + epsilon)
                 )
 
-            print("Epoch:", current_solution)
+            # print("Epoch:", current_solution)
         return current_solution
