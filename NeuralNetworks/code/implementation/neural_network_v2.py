@@ -26,6 +26,8 @@ class NeuralNetwork:
     def _forward(self, x: np.ndarray):
         if isinstance(x, pd.DataFrame) or isinstance(x, pd.Series):
             x = x.to_numpy()
+            if len(x.shape) == 1:
+                x = x.reshape(-1, 1)
         a = x.T
         for layer in self.layers:
             a = layer.forward(a)
@@ -235,51 +237,3 @@ class NeuralNetwork:
         )
         self.deflatten_weights_and_biases(solution)
         return solution
-
-
-def main():
-
-    nn = NeuralNetwork()
-    nn.add_layer(
-        Layer(
-            1,
-            10,
-            activation="sigmoid",
-        )
-    )
-    nn.add_layer(
-        Layer(
-            10,
-            5,
-            activation="sigmoid",
-        )
-    )
-    nn.add_layer(
-        Layer(
-            5,
-            1,
-            activation="linear",
-        )
-    )
-
-    df = pd.read_csv(
-        "https://raw.githubusercontent.com/nizwant/miowid/main/data/regression/steps-large-training.csv"
-    )
-
-    mean = df.mean()
-    std = df.std()
-    df = (df - mean) / std
-    nn.train(df["x"], df["y"], batch_size=50, max_num_epoch=100)
-    mse = nn.cost_function.cost(nn.predict(df["x"]), df["y"])
-    # print(f"Mean Squared Error: {mse * std['y']**2}")
-    y = []
-    for i in df["x"]:
-        y.append(nn._forward(np.array(i)))
-    plt.scatter(df["x"], y, c="red")
-    plt.scatter(df["x"], df["y"], c="blue")
-    plt.legend(["Prediction", "True"])
-    plt.show()
-
-
-if __name__ == "__main__":
-    main()
