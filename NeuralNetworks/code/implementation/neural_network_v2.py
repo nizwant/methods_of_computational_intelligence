@@ -145,8 +145,9 @@ class NeuralNetwork:
     def flatted_gradient(self):
         gradients = []
         for layer in self.layers:
-            print(layer.weights_gradient)
-            print(layer.biases_gradient)
+            print("weight", layer.weights_gradient.shape)
+            print("bias", layer.biases_gradient.shape)
+            print()
             gradients.append(layer.weights_gradient.flatten())
             gradients.append(layer.biases_gradient.flatten())
         return np.concatenate(gradients)
@@ -230,7 +231,7 @@ def main():
     nn.add_layer(
         Layer(
             1,
-            2,
+            5,
             activation="sigmoid",
             weight_initialization="normal",
             bias_initialization="normal",
@@ -238,48 +239,35 @@ def main():
     )
     nn.add_layer(
         Layer(
-            2,
+            5,
+            5,
+            activation="sigmoid",
+            weight_initialization="normal",
+            bias_initialization="normal",
+        )
+    )
+    nn.add_layer(
+        Layer(
+            5,
             1,
             activation="linear",
             weight_initialization="normal",
             bias_initialization="normal",
         )
     )
-    print(nn.flatted_gradient())
-    nn.backpropagation(np.array([[2], [1], [3]]), np.array([[1], [2], [4]]))
-    print("")
-    print(nn.flatted_gradient())
-    print("")
-    nn.calculate_gradient_numerically(
-        np.array([[2], [1], [3]]), np.array([[1], [2], [4]]), h=1e-6
+
+    df = pd.read_csv(
+        "https://raw.githubusercontent.com/nizwant/miowid/main/data/regression/square-small-test.csv"
     )
-    print(nn.flatted_gradient())
-    # nn = NeuralNetwork()
-    # nn.add_layer(
-    #     Layer(
-    #         1,
-    #         3,
-    #     )
-    # )
-    # nn.add_layer(
-    #     Layer(
-    #         3,
-    #         3,
-    #     )
-    # )
-    # nn.add_layer(
-    #     Layer(
-    #         3,
-    #         2,
-    #     )
-    # )
-    # print(nn._forward(np.array([[2], [1], [3]])))
-    # nn.visualize_network()
-    # print(nn.flatten_weights_and_biases())
-    # nn.calculate_gradient_numerically(
-    #     np.array([[2], [1], [3]]), np.array([[1, 1], [2, 2], [4, 5]])
-    # )
+
+    nn.backpropagation(df[["x"]].to_numpy(), df[["y"]].to_numpy())
     # print(nn.flatted_gradient())
+    # print("")
+    # nn.calculate_gradient_numerically(
+    #     df[["x"]].to_numpy(), df[["y"]].to_numpy(), h=1e-6
+    # )
+    print(nn.flatted_gradient())
+    nn.visualize_network()
 
 
 if __name__ == "__main__":

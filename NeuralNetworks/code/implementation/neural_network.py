@@ -449,23 +449,3 @@ class NeuralNetwork:
             markersize=10,
         )
         plt.legend(handles=[red_patch, green_patch])
-
-
-def main():
-    np.random.seed(0)
-    neural = NeuralNetwork([12], 1, 1)
-    df = pd.read_csv(
-        "https://raw.githubusercontent.com/nizwant/miowid/main/data/regression/square-small-test.csv"
-    )
-
-    neural.backpropagation(df[["x"]].to_numpy(), df[["y"]].to_numpy())
-    for layer in neural.layers:
-        print(layer.weights_gradient)
-        print(layer.biases_gradient)
-        print("\n")
-
-    # print(neural.layers[-1].delta)
-
-
-if __name__ == "__main__":
-    main()
