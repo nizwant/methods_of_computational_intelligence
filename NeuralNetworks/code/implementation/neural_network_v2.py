@@ -236,3 +236,6 @@ class NeuralNetwork:
             silent=silent,
         )
         return mse_after_epoch
+
+    def calculate_cost(self, x: np.ndarray, y: np.ndarray):
+        return self.cost_function.cost(self.predict(x), y)

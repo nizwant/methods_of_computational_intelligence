@@ -73,7 +73,7 @@ class mini_batch_gradient_descent(Optimizer):
         - batch_fraction: Fraction of the data to use in each mini batch (default: None).
 
         Returns:
-        - The optimized solution.
+        - List of mse after each epoch
         """
 
         X, y = Optimizer.transfer_data_to_numpy(X, y)
@@ -97,11 +97,10 @@ class mini_batch_gradient_descent(Optimizer):
                     X_selected, y_selected, current_solution, using_backpropagation
                 )
                 current_solution = current_solution - learning_rate * gradient
-            # mse_on_train = neural_network.cost_function.cost(X, y)
-            # mse_after_epoch.append(mse_on_train)
-            mse_on_train = 0
+            mse_on_train = neural_network.calculate_cost(X, y)
+            mse_after_epoch.append(mse_on_train)
             if not silent:
-                print(f"Epoch: {i}, MSE on train: {mse_on_train}")
+                print(f"Epoch: {i}, loss on train: {mse_on_train}")
         neural_network.deflatten_weights_and_biases(current_solution)
         return mse_after_epoch
 
@@ -132,7 +131,7 @@ class stochastic_gradient_descent(Optimizer):
         - max_num_iters: Maximum number of iterations (default: 1000).
 
         Returns:
-        - The optimized solution.
+        - List of mse after each epoch
         """
         return mini_batch_gradient_descent().optimize(
             X,
@@ -171,7 +170,7 @@ class full_batch_gradient_descent(Optimizer):
         - max_num_iters: Maximum number of iterations (default: 1000).
 
         Returns:
-        - The optimized solution.
+        - List of mse after each epoch
         """
         return mini_batch_gradient_descent().optimize(
             X,
@@ -214,7 +213,7 @@ class mini_batch_gradient_descent_with_momentum(Optimizer):
         - batch_fraction: Fraction of the data to use in each mini batch (default: None).
 
         Returns:
-        - The optimized solution.
+        - List of mse after each epoch
         """
 
         X, y = Optimizer.transfer_data_to_numpy(X, y)
@@ -240,11 +239,10 @@ class mini_batch_gradient_descent_with_momentum(Optimizer):
                 )
                 momentum = momentum_decay * momentum - learning_rate * gradient
                 current_solution = current_solution + momentum
-            # mse_on_train = neural_network.cost_function.cost(X, y)
-            # mse_after_epoch.append(mse_on_train)
-            mse_on_train = 0
+            mse_on_train = neural_network.calculate_cost(X, y)
+            mse_after_epoch.append(mse_on_train)
             if not silent:
-                print(f"Epoch: {i}, MSE on train: {mse_on_train}")
+                print(f"Epoch: {i}, loss on train: {mse_on_train}")
         neural_network.deflatten_weights_and_biases(current_solution)
         return mse_after_epoch
 
@@ -279,7 +277,7 @@ class adagrad(Optimizer):
         - epsilon: Small value to avoid division by zero (default: 1e-8).
 
         Returns:
-        - The optimized solution.
+        - List of mse after each epoch
         """
 
         X, y = Optimizer.transfer_data_to_numpy(X, y)
@@ -307,11 +305,10 @@ class adagrad(Optimizer):
                 current_solution = current_solution - learning_rate * gradient / (
                     np.sqrt(squared_gradients) + epsilon
                 )
-            # mse_on_train = neural_network.cost_function.cost(X, y)
-            # mse_after_epoch.append(mse_on_train)
-            mse_on_train = 0
+            mse_on_train = neural_network.calculate_cost(X, y)
+            mse_after_epoch.append(mse_on_train)
             if not silent:
-                print(f"Epoch: {i}, MSE on train: {mse_on_train}")
+                print(f"Epoch: {i}, loss on train: {mse_on_train}")
         neural_network.deflatten_weights_and_biases(current_solution)
         return mse_after_epoch
 
@@ -347,7 +344,7 @@ class rmsprop(Optimizer):
         - epsilon: Small value to avoid division by zero (default: 1e-8).
 
         Returns:
-        - The optimized solution.
+        - List of mse after each epoch
         """
 
         X, y = Optimizer.transfer_data_to_numpy(X, y)
@@ -378,11 +375,10 @@ class rmsprop(Optimizer):
                 current_solution = current_solution - learning_rate * gradient / (
                     np.sqrt(squared_gradients) + epsilon
                 )
-            # mse_on_train = neural_network.cost_function.cost(X, y)
-            # mse_after_epoch.append(mse_on_train)
-            mse_on_train = 0
+            mse_on_train = neural_network.calculate_cost(X, y)
+            mse_after_epoch.append(mse_on_train)
             if not silent:
-                print(f"Epoch: {i}, MSE on train: {mse_on_train}")
+                print(f"Epoch: {i}, loss on train: {mse_on_train}")
         neural_network.deflatten_weights_and_biases(current_solution)
         return mse_after_epoch
 
@@ -466,10 +462,9 @@ class adam(Optimizer):
                     * corrected_momentum
                     / (np.sqrt(corrected_squared_gradients) + epsilon)
                 )
-            # mse_on_train = neural_network.cost_function.cost(X, y)
-            # mse_after_epoch.append(mse_on_train)
-            mse_on_train = 0
+            mse_on_train = neural_network.calculate_cost(X, y)
+            mse_after_epoch.append(mse_on_train)
             if not silent:
-                print(f"Epoch: {i}, MSE on train: {mse_on_train}")
+                print(f"Epoch: {i}, loss on train: {mse_on_train}")
         neural_network.deflatten_weights_and_biases(current_solution)
         return mse_after_epoch
