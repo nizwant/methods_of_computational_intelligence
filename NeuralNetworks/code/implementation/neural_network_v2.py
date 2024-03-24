@@ -36,6 +36,9 @@ class NeuralNetwork:
     def predict(self, x: np.ndarray):
         return self._forward(x).T
 
+    def predict_class(self, x: np.ndarray):
+        return np.argmax(self.predict(x), axis=1, keepdims=True)
+
     def visualize_network(self):
         """
         Visualize the network architecture
