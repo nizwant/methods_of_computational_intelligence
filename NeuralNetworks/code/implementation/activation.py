@@ -47,8 +47,8 @@ class Softmax(Activation):
         if x.ndim == 1:
             exps = np.exp(x - np.max(x))
             return exps / np.sum(exps)
-        exps = np.exp(x - x.max(axis=1, keepdims=True))
-        return exps / np.sum(exps, axis=1, keepdims=True)
+        exps = np.exp(x - x.max(axis=0, keepdims=True))
+        return exps / np.sum(exps, axis=0, keepdims=True)
 
     def derivative(self, x: np.double) -> np.double:
         return self.activation(x) * (1 - self.activation(x))

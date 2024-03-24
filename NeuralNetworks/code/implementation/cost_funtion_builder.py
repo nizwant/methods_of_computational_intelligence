@@ -1,5 +1,6 @@
 from cost_function import MeanSquaredError
 from cost_function import AbsoluteError
+from cost_function import CrossEntropyWithSoftmax
 
 
 class CostFunctionBuilder:
@@ -8,5 +9,7 @@ class CostFunctionBuilder:
             return MeanSquaredError()
         elif cost_function == "ae":
             return AbsoluteError()
+        elif cost_function == "cross_entropy_with_softmax":
+            return CrossEntropyWithSoftmax()
         else:
             raise ValueError("Invalid cost function")
