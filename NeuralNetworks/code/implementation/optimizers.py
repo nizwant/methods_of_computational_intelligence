@@ -82,7 +82,7 @@ class mini_batch_gradient_descent(Optimizer):
         )
 
         current_solution = neural_network.flatten_weights_and_biases()
-        mse_after_epoch = []
+        mse_after_epoch_train = [neural_network.calculate_cost(X, y)]
 
         for i in range(max_num_epoch):
             N = X.shape[0]
@@ -98,11 +98,11 @@ class mini_batch_gradient_descent(Optimizer):
                 )
                 current_solution = current_solution - learning_rate * gradient
             mse_on_train = neural_network.calculate_cost(X, y)
-            mse_after_epoch.append(mse_on_train)
+            mse_after_epoch_train.append(mse_on_train)
             if not silent:
                 print(f"Epoch: {i}, loss on train: {mse_on_train}")
         neural_network.deflatten_weights_and_biases(current_solution)
-        return mse_after_epoch
+        return mse_after_epoch_train
 
 
 class stochastic_gradient_descent(Optimizer):
@@ -223,7 +223,7 @@ class mini_batch_gradient_descent_with_momentum(Optimizer):
 
         current_solution = neural_network.flatten_weights_and_biases()
         momentum = np.zeros_like(current_solution)
-        mse_after_epoch = []
+        mse_after_epoch_train = [neural_network.calculate_cost(X, y)]
 
         for i in range(max_num_epoch):
             N = X.shape[0]
@@ -240,11 +240,11 @@ class mini_batch_gradient_descent_with_momentum(Optimizer):
                 momentum = momentum_decay * momentum - learning_rate * gradient
                 current_solution = current_solution + momentum
             mse_on_train = neural_network.calculate_cost(X, y)
-            mse_after_epoch.append(mse_on_train)
+            mse_after_epoch_train.append(mse_on_train)
             if not silent:
                 print(f"Epoch: {i}, loss on train: {mse_on_train}")
         neural_network.deflatten_weights_and_biases(current_solution)
-        return mse_after_epoch
+        return mse_after_epoch_train
 
 
 class adagrad(Optimizer):
@@ -287,7 +287,7 @@ class adagrad(Optimizer):
 
         current_solution = neural_network.flatten_weights_and_biases()
         squared_gradients = np.zeros_like(current_solution)
-        mse_after_epoch = []
+        mse_after_epoch_train = [neural_network.calculate_cost(X, y)]
 
         for i in range(max_num_epoch):
             N = X.shape[0]
@@ -306,11 +306,11 @@ class adagrad(Optimizer):
                     np.sqrt(squared_gradients) + epsilon
                 )
             mse_on_train = neural_network.calculate_cost(X, y)
-            mse_after_epoch.append(mse_on_train)
+            mse_after_epoch_train.append(mse_on_train)
             if not silent:
                 print(f"Epoch: {i}, loss on train: {mse_on_train}")
         neural_network.deflatten_weights_and_biases(current_solution)
-        return mse_after_epoch
+        return mse_after_epoch_train
 
 
 class rmsprop(Optimizer):
@@ -354,7 +354,7 @@ class rmsprop(Optimizer):
 
         current_solution = neural_network.flatten_weights_and_biases()
         squared_gradients = np.zeros_like(current_solution)
-        mse_after_epoch = []
+        mse_after_epoch_train = [neural_network.calculate_cost(X, y)]
 
         for i in range(max_num_epoch):
             N = X.shape[0]
@@ -376,11 +376,11 @@ class rmsprop(Optimizer):
                     np.sqrt(squared_gradients) + epsilon
                 )
             mse_on_train = neural_network.calculate_cost(X, y)
-            mse_after_epoch.append(mse_on_train)
+            mse_after_epoch_train.append(mse_on_train)
             if not silent:
                 print(f"Epoch: {i}, loss on train: {mse_on_train}")
         neural_network.deflatten_weights_and_biases(current_solution)
-        return mse_after_epoch
+        return mse_after_epoch_train
 
 
 class adam(Optimizer):
@@ -428,7 +428,7 @@ class adam(Optimizer):
         momentum = np.zeros_like(current_solution)
         squared_gradients = np.zeros_like(current_solution)
         counter = 0
-        mse_after_epoch = []
+        mse_after_epoch_train = [neural_network.calculate_cost(X, y)]
 
         for i in range(max_num_epoch):
             N = X.shape[0]
@@ -463,8 +463,8 @@ class adam(Optimizer):
                     / (np.sqrt(corrected_squared_gradients) + epsilon)
                 )
             mse_on_train = neural_network.calculate_cost(X, y)
-            mse_after_epoch.append(mse_on_train)
+            mse_after_epoch_train.append(mse_on_train)
             if not silent:
                 print(f"Epoch: {i}, loss on train: {mse_on_train}")
         neural_network.deflatten_weights_and_biases(current_solution)
-        return mse_after_epoch
+        return mse_after_epoch_train

@@ -227,7 +227,7 @@ class NeuralNetwork:
         using_backpropagation=True,
         silent=True,
     ):
-        mse_after_epoch = self.optimizer(
+        mse_after_epoch_train = self.optimizer(
             X=X,
             y=y,
             using_backpropagation=using_backpropagation,
@@ -238,7 +238,7 @@ class NeuralNetwork:
             neural_network=self,
             silent=silent,
         )
-        return mse_after_epoch
+        return mse_after_epoch_train
 
     def calculate_cost(self, x: np.ndarray, y: np.ndarray):
         return self.cost_function.cost(self.predict(x), y)
