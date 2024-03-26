@@ -11,3 +11,4 @@ visualization ideas:
 - different initializations methods
 - different activation functions
 - bias == 0 vs bias != 0
+- soprawdzic czy pomaga regularyzacja jak byl ring3 na NN4 i wybuchaly wagi

@@ -38,7 +38,10 @@ class AbsoluteError(CostFunction):
 
 
 class CrossEntropyWithSoftmax(CostFunction):
+    EPSILON = 1e-10
+
     def cost(self, y_hat: np.ndarray, y: np.ndarray) -> float:
+        y_hat = np.clip(y_hat, self.EPSILON, 1)
         return -np.mean(y * np.log(y_hat))
 
     def cost_derivative(self, y_hat: np.ndarray, y: np.ndarray) -> np.ndarray:
