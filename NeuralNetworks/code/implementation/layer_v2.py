@@ -1,6 +1,6 @@
 import numpy as np
-from initialization_bulider import InitializationBuilder
-from activation_bulider import ActivationBuilder
+from initialization_builder import InitializationBuilder
+from activation_builder import ActivationBuilder
 
 
 class Layer:

@@ -1,8 +1,8 @@
 import numpy as np
 import pandas as pd
 from layer_v2 import Layer
-from optimizers_bulider import OptimizersBuilder
-from cost_funtion_builder import CostFunctionBuilder
+from optimizers_builder import OptimizersBuilder
+from cost_function_builder import CostFunctionBuilder
 from helper_functions import HelperFunction
 
 
