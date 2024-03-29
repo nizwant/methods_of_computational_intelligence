@@ -16,10 +16,14 @@ class NeuralNetwork:
         self.layer_sizes = []
 
     def add_layer(self, layer: Layer):
-        self.layers.append(layer)
         if not self.layer_sizes:
             self.layer_sizes = [layer.nodes_in]
+        else:
+            assert (
+                layer.nodes_in == self.layer_sizes[-1]
+            ), f"Output in previous layer doesn't match input in this layer"
         self.layer_sizes.append(layer.nodes_out)
+        self.layers.append(layer)
 
     def _forward(self, x: np.ndarray):
         if isinstance(x, pd.DataFrame) or isinstance(x, pd.Series):
