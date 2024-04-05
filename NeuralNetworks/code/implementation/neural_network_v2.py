@@ -7,13 +7,21 @@ from helper_functions import HelperFunction
 
 
 class NeuralNetwork:
-    __slots__ = ["layers", "optimizer", "cost_function", "layer_sizes"]
+    __slots__ = [
+        "layers",
+        "optimizer",
+        "cost_function",
+        "layer_sizes",
+        "regularization",
+    ]
 
-    def __init__(self, optimizer="adam", cost_function="mse"):
+    def __init__(self, optimizer="adam", cost_function="mse", regularization=None):
         self.layers = []
+        self.layer_sizes = []
         self.optimizer = OptimizersBuilder().build_optimizer(optimizer)
         self.cost_function = CostFunctionBuilder().build_cost_function(cost_function)
-        self.layer_sizes = []
+        assert regularization in [None, "l1", "l2"], "Regularization not supported"
+        self.regularization = regularization
 
     def add_layer(self, layer: Layer):
         if not self.layer_sizes:
