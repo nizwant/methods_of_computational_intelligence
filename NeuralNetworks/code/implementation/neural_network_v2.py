@@ -13,15 +13,19 @@ class NeuralNetwork:
         "cost_function",
         "layer_sizes",
         "regularization",
+        "C",
     ]
 
-    def __init__(self, optimizer="adam", cost_function="mse", regularization=None):
+    def __init__(
+        self, optimizer="adam", cost_function="mse", regularization=None, C=0.01
+    ):
         self.layers = []
         self.layer_sizes = []
         self.optimizer = OptimizersBuilder().build_optimizer(optimizer)
         self.cost_function = CostFunctionBuilder().build_cost_function(cost_function)
         assert regularization in [None, "l1", "l2"], "Regularization not supported"
         self.regularization = regularization
+        self.C = C  # strength of regularization
 
     def add_layer(self, layer: Layer):
         if not self.layer_sizes:
@@ -104,24 +108,51 @@ class NeuralNetwork:
         delta = self.cost_function.cost_derivative(a, y) * self.layers[
             -1
         ].activation.derivative(self.layers[-1].z)
+
+        # Calculate gradients for the last layer
         self.layers[-1].biases_gradient = np.mean(delta, axis=1, keepdims=True)
         self.layers[-1].weights_gradient = (
             np.dot(delta, self.layers[-2].a.T) / x.shape[0]
         )
+
+        # Add regularization to the last layer
+        if self.regularization == "l1":
+            self.layers[-1].weights_gradient += self.C * np.sign(
+                self.layers[-1].weights
+            )
+        elif self.regularization == "l2":
+            self.layers[-1].weights_gradient += 2 * self.C * self.layers[-1].weights
+
         for previous_layer, layer, next_layer in zip(
             self.layers[-3::-1], self.layers[-2::-1], self.layers[::-1]
         ):
             delta = np.dot(next_layer.weights.T, delta) * layer.activation.derivative(
                 layer.z
             )
+
+            # Calculate gradients for the all but first hidden layer
             layer.biases_gradient = np.mean(delta, axis=1, keepdims=True)
             layer.weights_gradient = np.dot(delta, previous_layer.a.T) / x.shape[0]
+
+            # Add regularization to the layer
+            if self.regularization == "l1":
+                layer.weights_gradient += self.C * np.sign(layer.weights)
+            elif self.regularization == "l2":
+                layer.weights_gradient += 2 * self.C * layer.weights
 
         delta = np.dot(self.layers[1].weights.T, delta) * self.layers[
             0
         ].activation.derivative(self.layers[0].z)
+
+        # Calculate gradients for the first hidden layer
         self.layers[0].biases_gradient = np.mean(delta, axis=1, keepdims=True)
         self.layers[0].weights_gradient = np.dot(delta, x) / x.shape[0]
+
+        # Add regularization to the first hidden layer
+        if self.regularization == "l1":
+            self.layers[0].weights_gradient += self.C * np.sign(self.layers[0].weights)
+        elif self.regularization == "l2":
+            self.layers[0].weights_gradient += 2 * self.C * self.layers[0].weights
 
     def calculate_and_extract_gradient(
         self,
