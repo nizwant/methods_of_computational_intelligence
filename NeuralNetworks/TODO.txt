@@ -4,11 +4,9 @@ write tests
 visualization ideas:
 - different accuracy of calculating numerically the gradient
 - numerically calculated gradient vs. backpropagated gradient epoch and time mse 
-- shuffle the data and see how the accuracy changes
 - different optimizers
+- jaki sens mają porownania 15 runow z flaga a i 15 bez flagi porowcac 
 - different learning rates
 - different batch sizes
-- different initializations methods
-- different activation functions
 - bias == 0 vs bias != 0
 - soprawdzic czy pomaga regularyzacja jak byl ring3 na NN4 i wybuchaly wagi
