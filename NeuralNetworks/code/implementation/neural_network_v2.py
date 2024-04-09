@@ -117,11 +117,13 @@ class NeuralNetwork:
 
         # Add regularization to the last layer
         if self.regularization == "l1":
-            self.layers[-1].weights_gradient += self.C * np.sign(
-                self.layers[-1].weights
+            self.layers[-1].weights_gradient += (
+                self.C * np.sign(self.layers[-1].weights) / x.shape[0]
             )
         elif self.regularization == "l2":
-            self.layers[-1].weights_gradient += 2 * self.C * self.layers[-1].weights
+            self.layers[-1].weights_gradient += (
+                2 * self.C * self.layers[-1].weights / x.shape[0]
+            )
 
         for previous_layer, layer, next_layer in zip(
             self.layers[-3::-1], self.layers[-2::-1], self.layers[::-1]
@@ -136,9 +138,9 @@ class NeuralNetwork:
 
             # Add regularization to the layer
             if self.regularization == "l1":
-                layer.weights_gradient += self.C * np.sign(layer.weights)
+                layer.weights_gradient += self.C * np.sign(layer.weights) / x.shape[0]
             elif self.regularization == "l2":
-                layer.weights_gradient += 2 * self.C * layer.weights
+                layer.weights_gradient += 2 * self.C * layer.weights / x.shape[0]
 
         delta = np.dot(self.layers[1].weights.T, delta) * self.layers[
             0
@@ -150,9 +152,13 @@ class NeuralNetwork:
 
         # Add regularization to the first hidden layer
         if self.regularization == "l1":
-            self.layers[0].weights_gradient += self.C * np.sign(self.layers[0].weights)
+            self.layers[0].weights_gradient += (
+                self.C * np.sign(self.layers[0].weights) / x.shape[0]
+            )
         elif self.regularization == "l2":
-            self.layers[0].weights_gradient += 2 * self.C * self.layers[0].weights
+            self.layers[0].weights_gradient += (
+                2 * self.C * self.layers[0].weights / x.shape[0]
+            )
 
     def calculate_and_extract_gradient(
         self,
@@ -193,7 +199,17 @@ class NeuralNetwork:
         return mse_after_epoch_train
 
     def calculate_cost(self, x: np.ndarray, y: np.ndarray):
-        return self.cost_function.cost(self.predict(x), y)
+        base_cost = self.cost_function.cost(self.predict(x), y)
+        if self.regularization is None:
+            return base_cost
+        if self.regularization == "l1":
+            return base_cost + self.C * sum(
+                np.sum(np.abs(layer.weights)) for layer in self.layers
+            )
+        if self.regularization == "l2":
+            return base_cost + self.C * sum(
+                np.sum(layer.weights**2) for layer in self.layers
+            )
 
     def visualize_network(self):
         HelperFunction.visualize_network(self)

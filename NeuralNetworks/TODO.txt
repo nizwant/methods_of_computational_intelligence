@@ -4,11 +4,7 @@ write tests
 visualization ideas:
 - different accuracy of calculating numerically the gradient
 - numerically calculated gradient vs. backpropagated gradient epoch and time mse 
-- different optimizers
-- different learning rates
-- different batch sizes
 - bias == 0 vs bias != 0
 - soprawdzic czy pomaga regularyzacja jak byl ring3 na NN4 i wybuchaly wagi
-- doddac inne liczenie funkcji wagi jak regularyzacja bo tego nie updatowalem 
 - dodac to ze jak porownujemy cross entropy i mse to plotujemy to samo
 - test czy na ostatniej sigmoid a wczesniej relu jest git
