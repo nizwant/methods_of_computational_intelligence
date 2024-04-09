@@ -5,7 +5,6 @@ visualization ideas:
 - different accuracy of calculating numerically the gradient
 - numerically calculated gradient vs. backpropagated gradient epoch and time mse 
 - different optimizers
-- jaki sens mają porownania 15 runow z flaga a i 15 bez flagi porowcac 
 - different learning rates
 - different batch sizes
 - bias == 0 vs bias != 0
