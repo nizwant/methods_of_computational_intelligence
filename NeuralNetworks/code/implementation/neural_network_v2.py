@@ -198,6 +198,34 @@ class NeuralNetwork:
         )
         return mse_after_epoch_train
 
+    def train_with_early_stopping(
+        self,
+        X,
+        y,
+        X_test,
+        y_test,
+        learning_rate=0.01,
+        max_num_epoch=1000,
+        batch_size=30,
+        batch_fraction=None,
+        using_backpropagation=True,
+        silent=True,
+    ):
+        mse_after_epoch_train, mse_after_epoch_test = self.optimizer(
+            X=X,
+            y=y,
+            X_test=X_test,
+            y_test=y_test,
+            using_backpropagation=using_backpropagation,
+            learning_rate=learning_rate,
+            max_num_epoch=max_num_epoch,
+            batch_size=batch_size,
+            batch_fraction=batch_fraction,
+            neural_network=self,
+            silent=silent,
+        )
+        return mse_after_epoch_train, mse_after_epoch_test
+
     def calculate_cost(self, x: np.ndarray, y: np.ndarray):
         base_cost = self.cost_function.cost(self.predict(x), y)
         if self.regularization is None:

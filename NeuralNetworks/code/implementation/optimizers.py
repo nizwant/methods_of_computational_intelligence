@@ -11,6 +11,8 @@ class Optimizer(ABC):
         y,
         initial_solution,
         calculate_gradient,
+        X_test=None,
+        y_test=None,
         learning_rate=0.01,
         max_num_epoch=1000,
         batch_size=30,
@@ -53,6 +55,8 @@ class mini_batch_gradient_descent(Optimizer):
         y,
         neural_network,
         using_backpropagation,
+        X_test=None,
+        y_test=None,
         learning_rate=0.01,
         max_num_epoch=1000,
         batch_size=30,
@@ -80,6 +84,10 @@ class mini_batch_gradient_descent(Optimizer):
         batch_size, iterations = Optimizer.calculate_batch_size_and_iteration(
             batch_size, batch_fraction, X
         )
+        if X_test is not None and y_test is not None:
+            X_test, y_test = Optimizer.transfer_data_to_numpy(X_test, y_test)
+            mse_after_epoch_test = [neural_network.calculate_cost(X_test, y_test)]
+            early_stopping_counter = 0
 
         current_solution = neural_network.flatten_weights_and_biases()
         mse_after_epoch_train = [neural_network.calculate_cost(X, y)]
@@ -97,11 +105,29 @@ class mini_batch_gradient_descent(Optimizer):
                     X_selected, y_selected, current_solution, using_backpropagation
                 )
                 current_solution = current_solution - learning_rate * gradient
+
+            # calculate loss after each epoch
             mse_on_train = neural_network.calculate_cost(X, y)
             mse_after_epoch_train.append(mse_on_train)
+            if X_test is not None and y_test is not None:
+                mse_on_test = neural_network.calculate_cost(X_test, y_test)
+
+                # calculate parameters for early stopping
+                if mse_on_test >= mse_after_epoch_test[-1]:
+                    early_stopping_counter += 1
+                else:
+                    early_stopping_counter = 0
+
+                mse_after_epoch_test.append(mse_on_test)
+                # check for early stopping
+                if early_stopping_counter == 5:
+                    return mse_after_epoch_train, mse_after_epoch_test
             if not silent:
                 print(f"Epoch: {i}, loss on train: {mse_on_train}")
         neural_network.deflatten_weights_and_biases(current_solution)
+
+        if X_test is not None and y_test is not None:
+            return mse_after_epoch_train, mse_after_epoch_test
         return mse_after_epoch_train
 
 
@@ -221,6 +247,11 @@ class mini_batch_gradient_descent_with_momentum(Optimizer):
             batch_size, batch_fraction, X
         )
 
+        if X_test is not None and y_test is not None:
+            X_test, y_test = Optimizer.transfer_data_to_numpy(X_test, y_test)
+            mse_after_epoch_test = [neural_network.calculate_cost(X_test, y_test)]
+            early_stopping_counter = 0
+
         current_solution = neural_network.flatten_weights_and_biases()
         momentum = np.zeros_like(current_solution)
         mse_after_epoch_train = [neural_network.calculate_cost(X, y)]
@@ -239,11 +270,29 @@ class mini_batch_gradient_descent_with_momentum(Optimizer):
                 )
                 momentum = momentum_decay * momentum - learning_rate * gradient
                 current_solution = current_solution + momentum
+
+            # calculate loss after each epoch
             mse_on_train = neural_network.calculate_cost(X, y)
             mse_after_epoch_train.append(mse_on_train)
+            if X_test is not None and y_test is not None:
+                mse_on_test = neural_network.calculate_cost(X_test, y_test)
+
+                # calculate parameters for early stopping
+                if mse_on_test >= mse_after_epoch_test[-1]:
+                    early_stopping_counter += 1
+                else:
+                    early_stopping_counter = 0
+
+                mse_after_epoch_test.append(mse_on_test)
+                # check for early stopping
+                if early_stopping_counter == 5:
+                    return mse_after_epoch_train, mse_after_epoch_test
             if not silent:
                 print(f"Epoch: {i}, loss on train: {mse_on_train}")
         neural_network.deflatten_weights_and_biases(current_solution)
+
+        if X_test is not None and y_test is not None:
+            return mse_after_epoch_train, mse_after_epoch_test
         return mse_after_epoch_train
 
 
@@ -285,6 +334,11 @@ class adagrad(Optimizer):
             batch_size, batch_fraction, X
         )
 
+        if X_test is not None and y_test is not None:
+            X_test, y_test = Optimizer.transfer_data_to_numpy(X_test, y_test)
+            mse_after_epoch_test = [neural_network.calculate_cost(X_test, y_test)]
+            early_stopping_counter = 0
+
         current_solution = neural_network.flatten_weights_and_biases()
         squared_gradients = np.zeros_like(current_solution)
         mse_after_epoch_train = [neural_network.calculate_cost(X, y)]
@@ -305,11 +359,29 @@ class adagrad(Optimizer):
                 current_solution = current_solution - learning_rate * gradient / (
                     np.sqrt(squared_gradients) + epsilon
                 )
+
+            # calculate loss after each epoch
             mse_on_train = neural_network.calculate_cost(X, y)
             mse_after_epoch_train.append(mse_on_train)
+            if X_test is not None and y_test is not None:
+                mse_on_test = neural_network.calculate_cost(X_test, y_test)
+
+                # calculate parameters for early stopping
+                if mse_on_test >= mse_after_epoch_test[-1]:
+                    early_stopping_counter += 1
+                else:
+                    early_stopping_counter = 0
+
+                mse_after_epoch_test.append(mse_on_test)
+                # check for early stopping
+                if early_stopping_counter == 5:
+                    return mse_after_epoch_train, mse_after_epoch_test
             if not silent:
                 print(f"Epoch: {i}, loss on train: {mse_on_train}")
         neural_network.deflatten_weights_and_biases(current_solution)
+
+        if X_test is not None and y_test is not None:
+            return mse_after_epoch_train, mse_after_epoch_test
         return mse_after_epoch_train
 
 
@@ -352,6 +424,11 @@ class rmsprop(Optimizer):
             batch_size, batch_fraction, X
         )
 
+        if X_test is not None and y_test is not None:
+            X_test, y_test = Optimizer.transfer_data_to_numpy(X_test, y_test)
+            mse_after_epoch_test = [neural_network.calculate_cost(X_test, y_test)]
+            early_stopping_counter = 0
+
         current_solution = neural_network.flatten_weights_and_biases()
         squared_gradients = np.zeros_like(current_solution)
         mse_after_epoch_train = [neural_network.calculate_cost(X, y)]
@@ -375,11 +452,29 @@ class rmsprop(Optimizer):
                 current_solution = current_solution - learning_rate * gradient / (
                     np.sqrt(squared_gradients) + epsilon
                 )
+
+            # calculate loss after each epoch
             mse_on_train = neural_network.calculate_cost(X, y)
             mse_after_epoch_train.append(mse_on_train)
+            if X_test is not None and y_test is not None:
+                mse_on_test = neural_network.calculate_cost(X_test, y_test)
+
+                # calculate parameters for early stopping
+                if mse_on_test >= mse_after_epoch_test[-1]:
+                    early_stopping_counter += 1
+                else:
+                    early_stopping_counter = 0
+
+                mse_after_epoch_test.append(mse_on_test)
+                # check for early stopping
+                if early_stopping_counter == 5:
+                    return mse_after_epoch_train, mse_after_epoch_test
             if not silent:
                 print(f"Epoch: {i}, loss on train: {mse_on_train}")
         neural_network.deflatten_weights_and_biases(current_solution)
+
+        if X_test is not None and y_test is not None:
+            return mse_after_epoch_train, mse_after_epoch_test
         return mse_after_epoch_train
 
 
@@ -424,6 +519,11 @@ class adam(Optimizer):
             batch_size, batch_fraction, X
         )
 
+        if X_test is not None and y_test is not None:
+            X_test, y_test = Optimizer.transfer_data_to_numpy(X_test, y_test)
+            mse_after_epoch_test = [neural_network.calculate_cost(X_test, y_test)]
+            early_stopping_counter = 0
+
         current_solution = neural_network.flatten_weights_and_biases()
         momentum = np.zeros_like(current_solution)
         squared_gradients = np.zeros_like(current_solution)
@@ -462,9 +562,27 @@ class adam(Optimizer):
                     * corrected_momentum
                     / (np.sqrt(corrected_squared_gradients) + epsilon)
                 )
+
+            # calculate loss after each epoch
             mse_on_train = neural_network.calculate_cost(X, y)
             mse_after_epoch_train.append(mse_on_train)
+            if X_test is not None and y_test is not None:
+                mse_on_test = neural_network.calculate_cost(X_test, y_test)
+
+                # calculate parameters for early stopping
+                if mse_on_test >= mse_after_epoch_test[-1]:
+                    early_stopping_counter += 1
+                else:
+                    early_stopping_counter = 0
+
+                mse_after_epoch_test.append(mse_on_test)
+                # check for early stopping
+                if early_stopping_counter == 5:
+                    return mse_after_epoch_train, mse_after_epoch_test
             if not silent:
                 print(f"Epoch: {i}, loss on train: {mse_on_train}")
         neural_network.deflatten_weights_and_biases(current_solution)
+
+        if X_test is not None and y_test is not None:
+            return mse_after_epoch_train, mse_after_epoch_test
         return mse_after_epoch_train
