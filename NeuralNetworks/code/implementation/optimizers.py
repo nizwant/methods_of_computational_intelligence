@@ -120,7 +120,7 @@ class mini_batch_gradient_descent(Optimizer):
 
                 mse_after_epoch_test.append(mse_on_test)
                 # check for early stopping
-                if early_stopping_counter == 5:
+                if early_stopping_counter == 10:
                     return mse_after_epoch_train, mse_after_epoch_test
             if not silent:
                 print(f"Epoch: {i}, loss on train: {mse_on_train}")
@@ -295,7 +295,7 @@ class mini_batch_gradient_descent_with_momentum(Optimizer):
 
                 mse_after_epoch_test.append(mse_on_test)
                 # check for early stopping
-                if early_stopping_counter == 5:
+                if early_stopping_counter == 10:
                     return mse_after_epoch_train, mse_after_epoch_test
             if not silent:
                 print(f"Epoch: {i}, loss on train: {mse_on_train}")
@@ -386,7 +386,7 @@ class adagrad(Optimizer):
 
                 mse_after_epoch_test.append(mse_on_test)
                 # check for early stopping
-                if early_stopping_counter == 5:
+                if early_stopping_counter == 10:
                     return mse_after_epoch_train, mse_after_epoch_test
             if not silent:
                 print(f"Epoch: {i}, loss on train: {mse_on_train}")
@@ -481,7 +481,7 @@ class rmsprop(Optimizer):
 
                 mse_after_epoch_test.append(mse_on_test)
                 # check for early stopping
-                if early_stopping_counter == 5:
+                if early_stopping_counter == 10:
                     return mse_after_epoch_train, mse_after_epoch_test
             if not silent:
                 print(f"Epoch: {i}, loss on train: {mse_on_train}")
@@ -593,7 +593,7 @@ class adam(Optimizer):
 
                 mse_after_epoch_test.append(mse_on_test)
                 # check for early stopping
-                if early_stopping_counter == 5:
+                if early_stopping_counter == 10:
                     return mse_after_epoch_train, mse_after_epoch_test
             if not silent:
                 print(f"Epoch: {i}, loss on train: {mse_on_train}")
