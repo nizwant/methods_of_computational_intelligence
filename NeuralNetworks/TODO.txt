@@ -1,5 +1,4 @@
 implement automatic dimensions 
-write tests 
 
 visualization ideas:
 - different accuracy of calculating numerically the gradient
