@@ -2,3 +2,5 @@
 .DS_Store
 venv
 
+data/kohonen/mnist_test.csv
+data/kohonen/mnist_train.csv
